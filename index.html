@@ -806,57 +806,41 @@
             clueModal.classList.add('hidden');
         });
 
-        // 최종 확인 버튼 클릭 시 데이터 전송
-        confirmEndButton.addEventListener('click', () => {
-            const feedbackInput = document.getElementById('feedback-input');
-            const dataToSend = {
-                name: gameState.playerName,
-                grade: gameState.playerGrade,
-                class: gameState.playerClass,
-                time: timerDisplay.textContent,
-                feedback: feedbackInput.value.trim()
-            };
-            
-            // 여기에 본인의 구글 앱스 스크립트 웹 앱 URL을 넣으세요.
-            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVl9IfRdJtqmLke5xVMvRQ9miiYSrKmPYNNJ2fe1h9RF33XkN_omVa8QFYUwHYLnWa/exec";
-            
-            if (SCRIPT_URL.includes("YOUR_APPS_SCRIPT_WEB_APP_URL")) {
-                showFeedback(false, "스프레드시트 연동 URL을 확인해주세요.");
-                return;
-            }
+  // 최종 확인 버튼 클릭 시 데이터 전송
+  confirmEndButton.addEventListener('click', () => {
+      const feedbackInput = document.getElementById('feedback-input');
+      const dataToSend = {
+        name: gameState.playerName,
+        grade: gameState.playerGrade,
+        class: gameState.playerClass,
+        time: timerDisplay.textContent,
+        feedback: feedbackInput.value.trim()
+      };
 
-            confirmEndButton.disabled = true;
-            confirmEndButton.textContent = '제출 중...';
+      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVl9IfRdJtqmLke5xVMvRQ9miiYSrKmPYNNJ2fe1h9RF33XkN_omVa8QFYUwHYLnWa/exec";
 
-            // 'no-cors' 모드를 제거하여 서버가 정상적으로 데이터를 받도록 수정
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(dataToSend),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                // 응답이 성공적인지 확인 (서버에서 에러를 반환해도 네트워크는 성공할 수 있음)
-                if (!response.ok) {
-                    // 서버 응답이 실패 상태 코드(4xx, 5xx)일 경우 에러 발생
-                    return response.json().then(err => { throw new Error(err.message || "서버 응답 오류"); });
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Success:', data);
-                showFeedback(true, '제출해주셔서 감사합니다!');
-                confirmEndButton.textContent = '제출 완료';
-                confirmEndButton.classList.add('bg-gray-400', 'cursor-not-allowed');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showFeedback(false, '제출에 실패했어요. 다시 시도해주세요.');
-                confirmEndButton.disabled = false;
-                confirmEndButton.textContent = '확인';
-            });
-        });
+      confirmEndButton.disabled = true;
+      confirmEndButton.textContent = '제출 중...';
+
+      // ↓ 수정된 fetch 호출: headers 옵션을 완전히 제거했습니다.
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(dataToSend)
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Success:', data);
+        showFeedback(true, '제출해주셔서 감사합니다!');
+        confirmEndButton.textContent = '제출 완료';
+        confirmEndButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showFeedback(false, '제출에 실패했어요. 다시 시도해주세요.');
+        confirmEndButton.disabled = false;
+        confirmEndButton.textContent = '확인';
+      });
+  });
         
         // --- 이미지 로딩 및 게임 시작 버튼 활성화 ---
         const imageUrls = gameData.stages.map(stage => stage.background).filter(url => !url.startsWith('https://placehold.co'));
