@@ -169,6 +169,16 @@
                 <button id="confirm-end-button" class="mt-8 bg-blue-500 text-white text-2xl font-bold py-3 px-8 rounded-full shadow-lg hover:bg-blue-400 transform hover:scale-105 transition-all duration-300">확인</button>
             </div>
         </div>
+
+<!-- CORS 우회용 숨은 iframe & 폼 -->
+<iframe name="submitFrame" style="display:none;"></iframe>
+<form id="submitForm" action="https://script.google.com/macros/s/AKfycbyRBeCr4q3reVKIpmsfGFPnHs1lsHarTB-ozQPL0NLPVLOuKrrP7kfrWPHs_jI8MK9a/exec" method="post" target="submitFrame" style="display:none;">
+  <input type="hidden" name="name">
+  <input type="hidden" name="grade">
+  <input type="hidden" name="class">
+  <input type="hidden" name="time">
+  <input type="hidden" name="feedback">
+</form>
         
         <div id="feedback-modal" class="hidden absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center modal-bg z-50">
             <div class="modal-content bg-white rounded-2xl p-8 text-center shadow-lg">
@@ -807,40 +817,28 @@
         });
 
   // 최종 확인 버튼 클릭 시 데이터 전송
-  confirmEndButton.addEventListener('click', () => {
-      const feedbackInput = document.getElementById('feedback-input');
-      const dataToSend = {
-        name: gameState.playerName,
-        grade: gameState.playerGrade,
-        class: gameState.playerClass,
-        time: timerDisplay.textContent,
-        feedback: feedbackInput.value.trim()
-      };
-
-      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVl9IfRdJtqmLke5xVMvRQ9miiYSrKmPYNNJ2fe1h9RF33XkN_omVa8QFYUwHYLnWa/exec";
-
-      confirmEndButton.disabled = true;
-      confirmEndButton.textContent = '제출 중...';
-
-      // ↓ 수정된 fetch 호출: headers 옵션을 완전히 제거했습니다.
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: JSON.stringify(dataToSend)
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Success:', data);
-        showFeedback(true, '제출해주셔서 감사합니다!');
-        confirmEndButton.textContent = '제출 완료';
-        confirmEndButton.classList.add('bg-gray-400', 'cursor-not-allowed');
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        showFeedback(false, '제출에 실패했어요. 다시 시도해주세요.');
-        confirmEndButton.disabled = false;
-        confirmEndButton.textContent = '확인';
-      });
-  });
+confirmEndButton.addEventListener('click', () => {
+  const feedbackInput = document.getElementById('feedback-input');
+  const dataToSend = {
+    name: gameState.playerName,
+    grade: gameState.playerGrade,
+    class: gameState.playerClass,
+    time: timerDisplay.textContent,
+    feedback: feedbackInput.value.trim()
+  };
+  const form = document.getElementById('submitForm');
+  form.elements['name'].value     = dataToSend.name;
+  form.elements['grade'].value    = dataToSend.grade;
+  form.elements['class'].value    = dataToSend.class;
+  form.elements['time'].value     = dataToSend.time;
+  form.elements['feedback'].value = dataToSend.feedback;
+  confirmEndButton.disabled   = true;
+  confirmEndButton.textContent = '제출 중…';
+  form.submit();
+  showFeedback(true, '제출해주셔서 감사합니다!');
+  confirmEndButton.textContent = '제출 완료';
+  confirmEndButton.classList.add('bg-gray-400','cursor-not-allowed');
+});
         
         // --- 이미지 로딩 및 게임 시작 버튼 활성화 ---
         const imageUrls = gameData.stages.map(stage => stage.background).filter(url => !url.startsWith('https://placehold.co'));
