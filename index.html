@@ -854,6 +854,58 @@
         closeClueModalBtn.addEventListener('click', () => {
             clueModal.classList.add('hidden');
         });
+
+        // --- 최종 확인 버튼 클릭 시 데이터 전송 ---
+        confirmEndButton.addEventListener('click', () => {
+            const feedbackInput = document.getElementById('feedback-input');
+            const dataToSend = {
+                name: gameState.playerName,
+                grade: gameState.playerGrade,
+                class: gameState.playerClass,
+                time: timerDisplay.textContent,
+                feedback: feedbackInput.value.trim()
+            };
+            
+            // 1단계에서 복사한 웹 앱 URL을 여기에 붙여넣으세요.
+            const SCRIPT_URL = "YOUR_APPS_SCRIPT_WEB_APP_URL";
+            
+            if (SCRIPT_URL === "YOUR_APPS_SCRIPT_WEB_APP_URL") {
+                showFeedback(false, "스프레드시트 연동이 필요합니다.");
+                return;
+            }
+
+            confirmEndButton.disabled = true;
+            confirmEndButton.textContent = '제출 중...';
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // CORS 에러 방지
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dataToSend)
+            })
+            .then(response => {
+                showFeedback(true, '제출해주셔서 감사합니다!');
+                confirmEndButton.textContent = '제출 완료';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showFeedback(false, '제출에 실패했어요. 다시 시도해주세요.');
+                confirmEndButton.disabled = false;
+                confirmEndButton.textContent = '확인';
+            });
+        });
+        
+        nextStageButton.addEventListener('click', () => {
+            gameState.currentStage++;
+            loadStage(gameState.currentStage);
+        });
+
+        closeClueModalBtn.addEventListener('click', () => {
+            clueModal.classList.add('hidden');
+        });
+        
         
         // --- 이미지 로딩 및 게임 시작 버튼 활성화 ---
         const imageUrls = gameData.stages.map(stage => stage.background).filter(url => !url.startsWith('https://placehold.co'));
