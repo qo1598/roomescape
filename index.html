@@ -85,7 +85,7 @@
             border-radius: 50%;
             cursor: pointer;
             transition: border-color 0.3s;
-             border: 3px solid transparent;
+              border: 3px solid transparent;
         }
         .hidden-object.found, .spot-the-diff.found {
             border-color: #f87171; /* red-400 */
@@ -108,7 +108,6 @@
 
     <div id="game-container" class="game-container bg-cover bg-center rounded-2xl shadow-2xl flex flex-col items-center justify-center p-0 relative">
 
-        <!-- 화면: 시작 -->
         <div id="screen-start" class="w-full h-full flex flex-col items-center justify-end text-center text-white bg-cover bg-center rounded-xl" style="background-image: url('https://i.ibb.co/ymrYhR5x/image.png');">
             <div class="bg-black bg-opacity-70 p-8 rounded-t-xl mb-12 max-w-3xl">
                 <p class="text-xl md:text-2xl mb-8">디지털 세상을 어지럽히는 문제를 풀고<br>평화를 되찾기 위해 매곡 어린이 탐험대의 도움이 필요해!</p>
@@ -118,7 +117,6 @@
             </div>
         </div>
         
-        <!-- 화면: 플레이어 정보 입력 -->
         <div id="player-info-screen" class="hidden absolute w-full h-full flex flex-col items-center justify-center bg-gray-800 bg-opacity-90 rounded-xl p-8 z-50">
             <div class="bg-white rounded-2xl p-8 shadow-2xl text-center w-full max-w-md">
                 <div class="text-8xl mb-4">🦉</div>
@@ -135,9 +133,7 @@
             </div>
         </div>
 
-        <!-- 화면: 게임 진행 -->
         <div id="screen-game" class="hidden w-full h-full flex flex-col">
-            <!-- 상단 정보 바 -->
             <div class="flex justify-between items-center p-4 bg-gray-900 bg-opacity-70 rounded-t-xl z-10">
                 <div class="flex items-baseline space-x-2">
                     <h2 id="stage-title" class="text-2xl text-yellow-300 font-bold"></h2>
@@ -147,10 +143,8 @@
                 <div id="hint-tracker" class="flex space-x-2"></div>
             </div>
 
-            <!-- 중앙 게임 콘텐츠 -->
             <div id="stage-content" class="flex-1 relative bg-cover bg-center"></div>
 
-            <!-- 하단 대화창 -->
             <div id="dialogue-box" class="w-full bg-gray-900 bg-opacity-80 p-4 flex items-center space-x-4 z-10 rounded-b-xl">
                 <div id="ai-assistant-owl" class="text-6xl flex-shrink-0 transition-transform duration-200">🦉</div>
                 <div class="text-white text-lg flex-1">
@@ -160,13 +154,12 @@
             </div>
         </div>
 
-        <!-- 화면: 종료 (수정됨) -->
         <div id="screen-end" class="hidden w-full h-full flex flex-col items-center justify-center text-center text-white bg-cover bg-center p-8" style="background-image: url('https://placehold.co/1000x720/2e1065/ffffff?text=MISSION%20COMPLETE!')">
              <div class="w-full max-w-2xl bg-yellow-100 text-gray-800 p-8 rounded-2xl shadow-2xl border-4 border-yellow-400 transform flex flex-col items-center">
                 <h1 class="text-4xl font-bold mb-2 text-yellow-600">🎉 임무 완수! 🎉</h1>
                 <h2 class="text-2xl font-bold mb-4">디지털 시민 인증서</h2>
                 <div class="text-8xl my-4">🏆</div>
-                <p class="text-xl mb-2">위 어린이는 본 방탈출출의 모든 과정을 통과하여<br>올바른 정보통신윤리 의식을 갖추었음을 인정합니다.</p>
+                <p class="text-xl mb-2">위 어린이는 본 방탈출의 모든 과정을 통과하여<br>올바른 정보통신윤리 의식을 갖추었음을 인정합니다.</p>
                 <p id="final-player-name" class="text-3xl font-extrabold my-4 text-blue-600"></p>
                 <p id="final-time" class="text-lg font-semibold text-gray-600"></p>
                 <div class="mt-6 w-full">
@@ -177,7 +170,6 @@
             </div>
         </div>
         
-        <!-- 모달: 피드백 -->
         <div id="feedback-modal" class="hidden absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center modal-bg z-50">
             <div class="modal-content bg-white rounded-2xl p-8 text-center shadow-lg">
                 <p id="feedback-icon" class="text-8xl mb-4"></p>
@@ -185,17 +177,14 @@
             </div>
         </div>
         
-        <!-- 모달: 단서 -->
         <div id="clue-modal" class="hidden absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center modal-bg-darker z-40">
             <div class="modal-content bg-yellow-100 rounded-2xl p-8 shadow-lg w-11/12 max-w-4xl text-gray-800 relative">
                 <button id="close-clue-modal" class="absolute top-2 right-4 text-3xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
                 <div id="clue-dynamic-content" class="text-center">
-                    <!-- 단서 내용이 여기에 들어감 -->
-                </div>
+                    </div>
             </div>
         </div>
         
-        <!-- 모달: 키패드 -->
         <div id="keypad-modal" class="hidden absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center modal-bg-darker z-30">
             <div class="keypad-modal bg-gray-700 rounded-2xl p-6 shadow-lg w-11/12 max-w-xs">
                 <div id="keypad-display" class="bg-gray-900 text-white text-4xl text-right rounded-lg h-16 mb-4 flex items-center justify-end pr-4"></div>
@@ -208,8 +197,9 @@
     document.addEventListener('DOMContentLoaded', () => {
         // --- Gemini API 호출 함수 ---
         async function callGemini(prompt) {
-            const apiKey = "AIzaSyBr3C6s-vWZR9LfI_Kc72jLQsI3bemd-Fk"; // API 키는 비워두세요. 실행 환경에서 자동으로 제공됩니다.
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            // 이 API 키는 실제 동작하지 않는 예시입니다. 실제 키를 사용하셔야 합니다.
+            const apiKey = "AIzaSyBr3C6s-vWZR9LfI_Kc72jLQsI3bemd-Fk"; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
             showClue("<p class='text-2xl'>AI 조수가 힌트를 생각하고 있어요... 🤔</p>");
             try {
                 const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
@@ -218,7 +208,7 @@
                 const result = await response.json();
                 if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
                     const hint = result.candidates[0].content.parts[0].text;
-                    showClue(`<p class="text-2xl font-bold mb-4">🤖 AI 조수의 힌트!</p><p class="text-xl">${hint}</p>`);
+                    showClue(`<p class="text-2xl font-bold mb-4">🤖 AI 조수의 힌트!</p><p class="text-xl">${hint.replace(/\n/g, '<br>')}</p>`);
                 } else {
                      showClue("미안, 지금은 힌트를 줄 수 없어. 방을 좀 더 둘러봐!");
                 }
@@ -263,7 +253,7 @@
                     dialogue: "{playerName}, 여기는 새로운 아이디어를 요리하는 '창작의 주방'이야. 이곳을 통과하려면 저작권 레시피를 잘 따라야 해!",
                     type: "escape_room",
                     password: "2417",
-                    hintIcons: ['🔥', '📖', '⏰', ' ']
+                    hintIcons: ['🔥', '📖', '⏰', '🍽️']
                 },
                 {
                     title: "4단계: 기억의 정원",
@@ -287,13 +277,14 @@
         // --- 게임 상태 변수 ---
         let gameState = {
             playerName: '', 
-            playerGrade: '', // 이 줄 추가
-            playerClass: '', // 이 줄 추가
+            playerGrade: '',
+            playerClass: '',
             currentStage: 0, 
             elapsedTime: 0, 
             timerInterval: null, 
             stageHintsFound: [] 
         };
+        
         // --- DOM 요소 가져오기 ---
         const screenStart = document.getElementById('screen-start');
         const playerInfoScreen = document.getElementById('player-info-screen');
@@ -365,7 +356,7 @@
             }
         }
         
-        // --- 1, 2, 5단계 렌더링 함수들 ---
+        // --- 단계별 렌더링 함수들 ---
         function renderStage1(stage) {
             stageContent.innerHTML = `<div id="laptop" class="absolute interactive-object" style="top: 58%; left: 8%; width: 30%; height: 30%;"></div><div id="books" class="absolute interactive-object" style="top: 65%; left: 39%; width: 15%; height: 20%;"></div><div id="frame" class="absolute interactive-object" style="top: 15%; left: 45%; width: 14%; height: 33%;"></div><div id="switch" class="absolute interactive-object" style="top: 46%; left: 58%; width: 7%; height: 10%;"></div><div id="door" class="absolute interactive-object" style="top: 10%; left: 65%; width: 23%; height: 88%;"></div>`;
             document.getElementById('books').onclick = () => { if(gameState.stageHintsFound[0]) return showClue("정보 보석은 모두 분류했어! 첫 번째 비밀번호는 '3'이었지."); showDragDropPuzzleModal(); };
@@ -384,7 +375,6 @@
             document.getElementById('door').onclick = () => showKeypad(stage.password);
         }
 
-        // --- 3단계 렌더링 (수정됨) ---
         function renderStage3(stage) {
             stageContent.innerHTML = `<div id="oven" class="absolute interactive-object" style="top: 42%; left: 4%; width: 26%; height: 50%;"></div><div id="book" class="absolute interactive-object" style="top: 72%; left: 29%; width: 42%; height: 25%;"></div><div id="clock" class="absolute interactive-object" style="top: 15%; left: 32%; width: 12%; height: 22%;"></div><div id="jars" class="absolute interactive-object" style="top: 10%; left: 78%; width: 20%; height: 55%;"></div><div id="door" class="absolute interactive-object" style="top: 24%; left: 48%; width: 22%; height: 48%;"></div>`;
             document.getElementById('oven').onclick = () => { if(gameState.stageHintsFound[0]) return showClue("화덕 퀴즈는 이미 풀었어! 첫 번째 비밀번호는 '2'였지."); showClue(`<h3 class="text-2xl font-bold mb-4">화덕 퀴즈!</h3><p class="text-xl mb-4">새로운 레시피를 만들 때, 올바른 방법은?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="true">여러 레시피에서 영감을 얻어 나만의 요리 만들기</button><button class="choice-btn" data-correct="false">유명한 셰프의 레시피를 그대로 베껴서 내 것인척 하기</button><button class="choice-btn" data-correct="false">친구의 아이디어를 몰래 훔쳐서 요리하기</button><button class="choice-btn" data-correct="false">맛만 있으면 과정은 상관없다고 생각하기</button></div>`, false); setupQuizChoices(0, "맞아! 창작은 영감에서 시작돼. 첫 번째 비밀번호는 '2'야."); };
@@ -394,7 +384,6 @@
             document.getElementById('door').onclick = () => showKeypad(stage.password);
         }
 
-        // --- 4단계 렌더링 (수정됨) ---
         function renderStage4(stage) {
             stageContent.innerHTML = `<div id="toolbox" class="absolute interactive-object" style="top: 45%; left: 10%; width: 22%; height: 20%;"></div><div id="plant" class="absolute interactive-object" style="top: 10%; left: 15%; width: 10%; height: 25%;"></div><div id="book-stage4" class="absolute interactive-object" style="top: 70%; left: 45%; width: 35%; height: 25%;"></div><div id="box-under" class="absolute interactive-object" style="top: 68%; left: 2%; width: 15%; height: 18%;"></div><div id="door" class="absolute interactive-object" style="top: 33%; left: 70%; width: 17%; height: 52%;"></div>`;
             document.getElementById('toolbox').onclick = () => { if(gameState.stageHintsFound[0]) return showClue("공구상자는 이미 확인했어. 첫 번째 비밀번호는 '1'이었지."); showClue(`<h3 class="text-2xl font-bold mb-4">보안 퀴즈!</h3><p class="text-xl mb-4">다음 중 가장 안전한 비밀번호는 무엇일까?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="false">12345678</button><button class="choice-btn" data-correct="false">mybirthday</button><button class="choice-btn" data-correct="true">MyHappyCat1015!</button><button class="choice-btn" data-correct="false">password</button></div>`, false); setupQuizChoices(0, "훌륭해! 안전한 비밀번호는 중요해. 첫 번째 비밀번호는 '1'이야."); };
@@ -404,15 +393,8 @@
             document.getElementById('door').onclick = () => showKeypad(stage.password);
         }
 
-        // --- 5단계 렌더링 ---
         function renderStage5(stage) {
-            stageContent.innerHTML = `
-                <div id="monitor" class="absolute interactive-object" style="top: 25%; left: 5%; width: 25%; height: 40%;"></div>
-                <div id="whiteboard" class="absolute interactive-object" style="top: 18%; left: 34%; width: 33%; height: 35%;"></div>
-                <div id="cabinet" class="absolute interactive-object" style="top: 66%; left: 53%; width: 12%; height: 18%;"></div>
-                <div id="flasks" class="absolute interactive-object" style="top: 48%; left: 40%; width: 20%; height: 20%;"></div>
-                <div id="door" class="absolute interactive-object" style="top: 15%; left: 73%; width: 20%; height: 80%;"></div>
-            `;
+            stageContent.innerHTML = `<div id="monitor" class="absolute interactive-object" style="top: 25%; left: 5%; width: 25%; height: 40%;"></div><div id="whiteboard" class="absolute interactive-object" style="top: 18%; left: 34%; width: 33%; height: 35%;"></div><div id="cabinet" class="absolute interactive-object" style="top: 66%; left: 53%; width: 12%; height: 18%;"></div><div id="flasks" class="absolute interactive-object" style="top: 48%; left: 40%; width: 20%; height: 20%;"></div><div id="door" class="absolute interactive-object" style="top: 15%; left: 73%; width: 20%; height: 80%;"></div>`;
             document.getElementById('monitor').onclick = () => { if(gameState.stageHintsFound[0]) return showClue("가짜 뉴스 퀴즈는 해결했어. 첫 번째 비밀번호는 '2'였지."); showClue(`<h3 class="text-2xl font-bold mb-4">가짜 뉴스 판별 퀴즈!</h3><p class="text-xl mb-4">다음 중 가짜 뉴스일 가능성이 가장 높은 것은?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="false">'오늘 오후부터 전국에 비가 오겠습니다' - 기상청</button><button class="choice-btn" data-correct="true">'충격! OO초등학교 급식에서 공룡알 발견!' - 아무개 신문</button><button class="choice-btn" data-correct="false">'내일 월드컵 결승전이 열립니다.' - 공식 스포츠 뉴스</button></div>`, false); setupQuizChoices(0, "맞아! 너무 자극적인 제목은 의심해봐야 해. 첫 번째 비밀번호는 '2'야."); };
             document.getElementById('whiteboard').onclick = () => { showClue("화이트보드에 복잡한 공식이 적혀있다.<br><br>가운데에 빨간 글씨로 'H₂O' 라고 쓰여 있다. 물을 뜻하는 분자식이네!<br><br><strong>두 번째 비밀번호는 '0' 인 것 같아.</strong>"); if (!gameState.stageHintsFound[1]) { gameState.stageHintsFound[1] = true; updateHintTracker(); } };
             document.getElementById('cabinet').onclick = () => { if(gameState.stageHintsFound[2]) return showClue("바이러스 피하기는 성공했어! 세 번째 비밀번호는 '2'였지."); showMissileGameModal(); };
@@ -420,7 +402,7 @@
             document.getElementById('door').onclick = () => showKeypad(stage.password);
         }
 
-        // --- 미니게임: 퀴즈 선택지 설정 ---
+        // --- 미니게임 함수들 ---
         function setupQuizChoices(hintIndex, successMessage) {
             clueContent.querySelectorAll('.choice-btn').forEach(btn => {
                 btn.style.cssText = "background-color: #3b82f6; color: white; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 0.5rem; cursor: pointer; transition: background-color 0.2s;";
@@ -441,7 +423,6 @@
             });
         }
         
-        // --- 2단계 미니게임: 카드 뒤집기 ---
         function showMemoryGameModal() {
             const pairs = [{ id: 1, content: '😀' }, { id: 1, content: '기쁨' }, { id: 2, content: '😭' }, { id: 2, content: '슬픔' }, { id: 3, content: '😡' }, { id: 3, content: '화남' }, { id: 4, content: '😱' }, { id: 4, content: '놀람' }, { id: 5, content: '😍' }, { id: 5, content: '사랑' }, { id: 6, content: '🤔' }, { id: 6, content: '궁금' }, { id: 7, content: '😴' }, { id: 7, content: '피곤' }, { id: 8, content: '👍' }, { id: 8, content: '최고' }];
             pairs.sort(() => 0.5 - Math.random());
@@ -463,19 +444,14 @@
             cards.forEach(card => card.addEventListener('click', flipCard));
         }
 
-        // --- 3단계 미니게임: 숨은 그림 찾기 (위치 수정됨) ---
         function showHiddenObjectGameModal() {
             const modalHtml = `
                 <h3 class="text-2xl font-bold mb-4">숨은 그림 찾기 (4개)</h3>
                 <p class="mb-4">그림 속에 숨겨진 사과, 칫솔, 빗, 우산을 찾아 클릭해보세요!</p>
                 <div id="hidden-object-container" class="relative w-full aspect-[1.77] mx-auto bg-cover bg-center rounded-lg" style="background-image: url('https://i.ibb.co/609R6L8D/Chat-GPT-Image-2025-6-15-09-32-54.png')">
-                     <!-- 빗 -->
                      <div class="hidden-object" style="top: 40%; left: 15%; width: 15%; height: 30%;"></div>
-                     <!-- 사과 -->
                      <div class="hidden-object" style="top: 24%; left: 42%; width: 17%; height: 26%;"></div>
-                     <!-- 칫솔 -->
                      <div class="hidden-object" style="top: 27%; left: 58%; width: 9%; height: 25%;"></div>
-                     <!-- 우산 -->
                      <div class="hidden-object" style="top: 60%; left: 76%; width: 15%; height: 35%;"></div>
                 </div>`;
             showClue(modalHtml, false);
@@ -501,7 +477,6 @@
             });
         }
         
-        // --- 1단계 미니게임: 드래그 앤 드롭 ---
         function showDragDropPuzzleModal() {
             const items = [{ text: "내 이름", type: "private" }, { text: "사는 곳", type: "private" }, { text: "전화번호", type: "private" }, { text: "학교 이름", type: "private" }, { text: "좋아하는 색깔", type: "public" }, { text: "좋아하는 동물", type: "public" }, { text: "내 취미", type: "public" }, { text: "장래희망", type: "public" }];
             let itemsHtml = '';
@@ -537,15 +512,14 @@
             });
         }
         
-        // --- 4단계 미니게임 (위치 수정됨) ---
         function showSpotTheDifferenceModal() {
             const modalHtml = `
                 <h3 class="text-2xl font-bold mb-4">다른 그림 찾기 (3곳)</h3>
                 <p class="mb-4">왼쪽과 오른쪽 그림을 보고 다른 점 3곳을 찾아 클릭해보세요!</p>
                 <div id="spot-the-diff-container" class="relative w-full aspect-[1.77] mx-auto bg-contain bg-no-repeat bg-center rounded-lg" style="background-image: url('https://i.ibb.co/9HwqJtJp/4.png');">
-                     <div class="spot-the-diff" style="top: 14%; left: 57%; width: 9%; height: 13%;"></div>
-                     <div class="spot-the-diff" style="top: 5%; left: 76%; width: 9%; height: 12%;"></div>
-                     <div class="spot-the-diff" style="top: 57%; left: 91%; width: 10%; height: 15%;"></div>
+                       <div class="spot-the-diff" style="top: 14%; left: 57%; width: 9%; height: 13%;"></div>
+                       <div class="spot-the-diff" style="top: 5%; left: 76%; width: 9%; height: 12%;"></div>
+                       <div class="spot-the-diff" style="top: 57%; left: 91%; width: 10%; height: 15%;"></div>
                 </div>`;
             showClue(modalHtml, false);
             setupSpotTheDifferenceGame();
@@ -580,7 +554,6 @@
             document.getElementById('phishing-correct-btn').onclick = () => { showClue("피싱 메시지를 잘 피했구나! 네 번째 비밀번호는 '5'야."); if (!gameState.stageHintsFound[3]) { gameState.stageHintsFound[3] = true; updateHintTracker(); } };
         }
         
-        // --- 5단계 미니게임: 미사일 피하기 (난이도 및 타이머 수정) ---
         function showMissileGameModal() {
             const modalHtml = `
                 <h3 class="text-2xl font-bold mb-4">악성코드 미사일 피하기!</h3>
@@ -606,7 +579,6 @@
             const resultText = document.getElementById('game-result-text');
             const timerDisplay = document.getElementById('missile-game-timer-display');
             let gameLoopId;
-
             const player = { x: canvas.width / 2 - 15, y: canvas.height - 40, width: 30, height: 30 };
             let missiles = [];
             let gameTime = 10;
@@ -631,36 +603,22 @@
             }
 
             function updateMissiles() {
-                missiles.forEach(missile => {
-                    missile.y += missile.speed;
-                });
+                missiles.forEach(missile => { missile.y += missile.speed; });
                 missiles = missiles.filter(missile => missile.y < canvas.height);
             }
 
             function createMissile() {
-                missiles.push({
-                    x: Math.random() * (canvas.width - 10),
-                    y: -20,
-                    width: 10,
-                    height: 20,
-                    speed: 4 + Math.random() * 4
-                });
+                missiles.push({ x: Math.random() * (canvas.width - 10), y: -20, width: 10, height: 20, speed: 4 + Math.random() * 4 });
             }
             
             function checkCollision(missile) {
-                 return (player.x < missile.x + missile.width &&
-                        player.x + player.width > missile.x &&
-                        player.y < missile.y + missile.height &&
-                        player.y + player.height > missile.y);
+                 return (player.x < missile.x + missile.width && player.x + player.width > missile.x && player.y < missile.y + missile.height && player.y + player.height > missile.y);
             }
 
             function gameLoop() {
                 if (isGameOver) return;
-                
-                // 난이도에 따라 미사일 추가
                 if (Math.random() < 0.1) createMissile();
                 if (Math.random() < 0.05) createMissile();
-
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 drawPlayer();
@@ -682,7 +640,6 @@
                 clearInterval(timerInterval);
                 overlay.classList.remove('hidden');
                 timerDisplay.classList.add('hidden');
-
                 if (isWin) {
                     resultText.innerHTML = "성공! 🚀";
                     startBtn.textContent = "힌트 확인";
@@ -708,9 +665,7 @@
             canvas.addEventListener('mousemove', e => movePlayer(e.clientX));
             canvas.addEventListener('touchmove', e => {
                 e.preventDefault();
-                if (e.touches.length > 0) {
-                    movePlayer(e.touches[0].clientX);
-                }
+                if (e.touches.length > 0) movePlayer(e.touches[0].clientX);
             }, { passive: false });
 
             startBtn.onclick = () => {
@@ -724,31 +679,26 @@
                 timerInterval = setInterval(() => {
                     gameTime--;
                     timerDisplay.textContent = gameTime;
-                    
-                    if (gameTime <= 0) {
-                        gameOver(true);
-                    }
+                    if (gameTime <= 0) gameOver(true);
                 }, 1000);
                 gameLoop();
             };
-            
             drawPlayer();
             resultText.innerHTML = '';
             startBtn.textContent = '게임 시작';
         }
 
-        // --- 모달: 단서 표시 ---
+        // --- 핵심 UI 함수들 ---
         function showClue(htmlContent, canClose = true) {
             clueContent.innerHTML = htmlContent;
             clueModal.classList.remove('hidden');
             if (canClose) {
-                clueModal.onclick = (e) => { if (e.target.id === 'clue-modal') clueModal.classList.add('hidden'); };
+                clueModal.onclick = (e) => { if (e.target.id === 'clue-modal' || e.target.id === 'close-clue-modal') clueModal.classList.add('hidden'); };
             } else {
                 clueModal.onclick = null;
             }
         }
         
-        // --- 모달: 키패드 표시 ---
         function showKeypad(correctPassword) {
             const keypadDisplay = keypadModal.querySelector('#keypad-display');
             const keypadGrid = keypadModal.querySelector('.grid');
@@ -781,7 +731,6 @@
             keypadModal.classList.remove('hidden');
         }
 
-        // --- 단계 완료 처리 ---
         function checkStageCompletion() {
             if (gameState.currentStage < gameData.stages.length - 1) {
                 dialogueText.textContent = `훌륭해, ${gameState.playerName}! 다음 단계로 갈 수 있는 열쇠를 얻었어!`;
@@ -792,7 +741,6 @@
             }
         }
         
-        // --- 모달: 피드백 표시 ---
         function showFeedback(isCorrect, text) {
             feedbackIcon.textContent = isCorrect ? '✅' : '❌';
             feedbackText.textContent = text;
@@ -800,7 +748,6 @@
             setTimeout(() => { feedbackModal.classList.add('hidden'); }, 1500);
         }
 
-        // --- UI: 힌트 추적기 업데이트 ---
         function updateHintTracker() {
             hintTracker.innerHTML = '';
             const stage = gameData.stages[gameState.currentStage];
@@ -812,14 +759,12 @@
             }
         }
         
-        // --- UI: 타이머 업데이트 ---
         function updateTimerDisplay() {
             const minutes = Math.floor(gameState.elapsedTime / 60).toString().padStart(2, '0');
             const seconds = (gameState.elapsedTime % 60).toString().padStart(2, '0');
             timerDisplay.textContent = `${minutes}:${seconds}`;
         }
         
-        // --- 게임 종료 (수정) ---
         function endGame() {
             if(gameState.timerInterval) clearInterval(gameState.timerInterval);
             screenGame.classList.add('hidden');
@@ -830,33 +775,26 @@
             finalTime.textContent = `총 소요 시간: ${minutes}분 ${seconds}초`;
         }
 
-        // --- 이벤트 리스너 설정 ---
+        // --- 이벤트 리스너 설정 (정리된 버전) ---
         startButton.addEventListener('click', () => {
              screenStart.classList.add('hidden');
              playerInfoScreen.classList.remove('hidden');
         });
         
-// --- 이벤트 리스너 설정 --- 부분에 있는 submitPlayerInfoBtn을 찾아서 바꾸세요.
-submitPlayerInfoBtn.addEventListener('click', () => {
-    const playerNameInput = document.getElementById('player-name');
-    const playerGradeInput = document.getElementById('player-grade'); // 이 줄 추가
-    const playerClassInput = document.getElementById('player-class'); // 이 줄 추가
+        submitPlayerInfoBtn.addEventListener('click', () => {
+            const playerNameInput = document.getElementById('player-name');
+            const playerGradeInput = document.getElementById('player-grade');
+            const playerClassInput = document.getElementById('player-class');
 
-    if (playerNameInput.value.trim() === '' || playerGradeInput.value.trim() === '' || playerClassInput.value.trim() === '') { // 조건문 수정
-        showFeedback(false, '이름, 학년, 반을 모두 입력해주세요!'); // 메시지 수정
-        return;
-    }
-    gameState.playerName = playerNameInput.value.trim();
-    gameState.playerGrade = playerGradeInput.value.trim(); // 이 줄 추가
-    gameState.playerClass = playerClassInput.value.trim(); // 이 줄 추가
-    initGame();
-});
+            if (playerNameInput.value.trim() === '' || playerGradeInput.value.trim() === '' || playerClassInput.value.trim() === '') {
+                showFeedback(false, '이름, 학년, 반을 모두 입력해주세요!');
+                return;
+            }
+            gameState.playerName = playerNameInput.value.trim();
+            gameState.playerGrade = playerGradeInput.value.trim();
 
-        confirmEndButton.addEventListener('click', () => {
-            showFeedback(true, '제출해주셔서 감사합니다!');
-            confirmEndButton.disabled = true;
-            confirmEndButton.textContent = '제출 완료';
-            confirmEndButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+            gameState.playerClass = playerClassInput.value.trim();
+            initGame();
         });
         
         nextStageButton.addEventListener('click', () => {
@@ -868,7 +806,7 @@ submitPlayerInfoBtn.addEventListener('click', () => {
             clueModal.classList.add('hidden');
         });
 
-        // --- 최종 확인 버튼 클릭 시 데이터 전송 ---
+        // 최종 확인 버튼 클릭 시 데이터 전송
         confirmEndButton.addEventListener('click', () => {
             const feedbackInput = document.getElementById('feedback-input');
             const dataToSend = {
@@ -879,28 +817,38 @@ submitPlayerInfoBtn.addEventListener('click', () => {
                 feedback: feedbackInput.value.trim()
             };
             
-            // 1단계에서 복사한 웹 앱 URL을 여기에 붙여넣으세요.
-            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXzwxNEo2P5jz5at-v4JlMV8WmH9VONMr7tSGvh6KaVW1bjhYz6wDdfHBp2In2yOuA/exec";
+            // 여기에 본인의 구글 앱스 스크립트 웹 앱 URL을 넣으세요.
+            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVl9IfRdJtqmLke5xVMvRQ9miiYSrKmPYNNJ2fe1h9RF33XkN_omVa8QFYUwHYLnWa/exec";
             
-            if (SCRIPT_URL === "YOUR_APPS_SCRIPT_WEB_APP_URL") {
-                showFeedback(false, "스프레드시트 연동이 필요합니다.");
+            if (SCRIPT_URL.includes("YOUR_APPS_SCRIPT_WEB_APP_URL")) {
+                showFeedback(false, "스프레드시트 연동 URL을 확인해주세요.");
                 return;
             }
 
             confirmEndButton.disabled = true;
             confirmEndButton.textContent = '제출 중...';
 
+            // 'no-cors' 모드를 제거하여 서버가 정상적으로 데이터를 받도록 수정
             fetch(SCRIPT_URL, {
                 method: 'POST',
-                mode: 'no-cors', // CORS 에러 방지
+                body: JSON.stringify(dataToSend),
                 headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dataToSend)
+                    'Content-Type': 'application/json'
+                }
             })
             .then(response => {
+                // 응답이 성공적인지 확인 (서버에서 에러를 반환해도 네트워크는 성공할 수 있음)
+                if (!response.ok) {
+                    // 서버 응답이 실패 상태 코드(4xx, 5xx)일 경우 에러 발생
+                    return response.json().then(err => { throw new Error(err.message || "서버 응답 오류"); });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
                 showFeedback(true, '제출해주셔서 감사합니다!');
                 confirmEndButton.textContent = '제출 완료';
+                confirmEndButton.classList.add('bg-gray-400', 'cursor-not-allowed');
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -910,20 +858,10 @@ submitPlayerInfoBtn.addEventListener('click', () => {
             });
         });
         
-        nextStageButton.addEventListener('click', () => {
-            gameState.currentStage++;
-            loadStage(gameState.currentStage);
-        });
-
-        closeClueModalBtn.addEventListener('click', () => {
-            clueModal.classList.add('hidden');
-        });
-        
-        
         // --- 이미지 로딩 및 게임 시작 버튼 활성화 ---
         const imageUrls = gameData.stages.map(stage => stage.background).filter(url => !url.startsWith('https://placehold.co'));
-        imageUrls.push('https://i.ibb.co/ymrYhR5/image.png');
-        imageUrls.push('https://i.ibb.co/609R6L8/Chat-GPT-Image-2025-6-15-09-32-54.png');
+        imageUrls.push('https://i.ibb.co/ymrYhR5x/image.png');
+        imageUrls.push('https://i.ibb.co/609R6L8D/Chat-GPT-Image-2025-6-15-09-32-54.png');
         imageUrls.push('https://i.ibb.co/9HwqJtJp/4.png');
 
         startButton.textContent = '게임 불러오는 중...';
