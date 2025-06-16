@@ -623,12 +623,13 @@
         
         function showSpotTheDifferenceModal() {
             const modalHtml = `
-                <h3 class="text-2xl font-bold mb-4">다른 그림 찾기 (3곳)</h3>
-                <p class="mb-4">왼쪽과 오른쪽 그림을 보고 다른 점 3곳을 찾아 클릭해보세요!</p>
+                <h3 class="text-2xl font-bold mb-4">다른 그림 찾기 (4곳)</h3>
+                <p class="mb-4">왼쪽과 오른쪽 그림을 보고 다른 점 4곳을 찾아 클릭해보세요!</p>
                 <div id="spot-the-diff-container" class="relative w-full aspect-[1.77] mx-auto bg-contain bg-no-repeat bg-center rounded-lg" style="background-image: url('https://i.ibb.co/9HwqJtJp/4.png');">
                        <div class="spot-the-diff" style="top: 14%; left: 57%; width: 9%; height: 13%;"></div>
                        <div class="spot-the-diff" style="top: 5%; left: 76%; width: 9%; height: 12%;"></div>
                        <div class="spot-the-diff" style="top: 57%; left: 91%; width: 10%; height: 15%;"></div>
+                       <div class="spot-the-diff" style="top: 40%; left: 61%; width: 7%; height: 10%;"></div>
                 </div>`;
             showClue(modalHtml, false);
             setupSpotTheDifferenceGame();
