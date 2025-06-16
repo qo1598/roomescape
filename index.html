@@ -503,7 +503,7 @@
     let completedItems = 0;
 
     // --- 1. 기존 마우스 이벤트 (PC용) ---
-    // 이 코드는 그대로 둡니다.
+    // 마우스 이벤트도 아이템이 삭제되는 대신 상자 안으로 이동하도록 수정했습니다.
     modalDraggables.forEach(draggable => {
         draggable.addEventListener('dragstart', (e) => {
             draggedItem = e.target;
@@ -527,7 +527,12 @@
             e.preventDefault();
             target.classList.remove('drop-hover');
             if (draggedItem && target.dataset.type === draggedItem.dataset.type) {
-                draggedItem.remove();
+                // [수정] .remove() 대신 .appendChild()로 아이템을 상자 안으로 이동시킵니다.
+                target.appendChild(draggedItem);
+                draggedItem.setAttribute('draggable', 'false'); // 한 번 옮긴 아이템은 다시 드래그 안되게 설정
+                draggedItem.classList.remove('dragging', 'cursor-grab');
+                draggedItem.classList.add('cursor-not-allowed');
+
                 completedItems++;
                 if (completedItems === totalItems) {
                     showClue("정보 분류 성공! 첫 번째 비밀번호는 '3' 이야.");
@@ -542,36 +547,35 @@
         });
     });
 
-    // --- 2. 터치 이벤트를 위한 코드 추가 (태블릿용) ---
-    let touchDraggedItem = null; // 터치용으로 드래그되는 아이템
-    let originalPosition = { x: 0, y: 0 }; // 원래 위치로 돌아가기 위한 변수
+
+    // --- 2. 터치 이벤트 (태블릿용) ---
+    let touchDraggedItem = null;
 
     modalDraggables.forEach(draggable => {
+        // 이미 옮겨진 아이템은 터치 이벤트가 동작하지 않도록 방지
+        if(draggable.getAttribute('draggable') === 'false') return;
+
         draggable.addEventListener('touchstart', (e) => {
             touchDraggedItem = e.target;
             
-            // 드래그 시작 시 아이템을 살짝 투명하게 만듭니다.
-            touchDraggedItem.style.opacity = '0.5'; 
+            // [수정] 드래그하는 동안 최상단에 보이도록 z-index를 높게 설정합니다.
+            touchDraggedItem.style.zIndex = '1000';
+            touchDraggedItem.classList.add('dragging');
+
         }, { passive: true });
 
         draggable.addEventListener('touchmove', (e) => {
             if (!touchDraggedItem) return;
-            e.preventDefault(); // 화면 스크롤 방지
+            e.preventDefault();
 
-            // 손가락 위치를 따라 아이템이 움직이도록 합니다.
             let touch = e.targetTouches[0];
-            touchDraggedItem.style.position = 'absolute'; // 자유롭게 움직이도록 설정
+            touchDraggedItem.style.position = 'absolute';
             touchDraggedItem.style.left = touch.pageX - touchDraggedItem.offsetWidth / 2 + 'px';
             touchDraggedItem.style.top = touch.pageY - touchDraggedItem.offsetHeight / 2 + 'px';
 
-            // 모든 드롭 타겟의 하이라이트를 일단 제거합니다.
             modalDropTargets.forEach(t => t.classList.remove('drop-hover'));
-
-            // 현재 손가락 아래에 있는 요소를 확인합니다.
             let elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
             let dropTarget = elementUnderTouch ? elementUnderTouch.closest('.drop-target') : null;
-            
-            // 드롭 타겟 위에 있다면 하이라이트 효과를 줍니다.
             if(dropTarget){
                 dropTarget.classList.add('drop-hover');
             }
@@ -579,24 +583,28 @@
 
         draggable.addEventListener('touchend', (e) => {
             if (!touchDraggedItem) return;
-            
-            // 스타일을 원래대로 복구합니다.
-            touchDraggedItem.style.opacity = '1';
-            touchDraggedItem.style.position = 'static';
-            touchDraggedItem.style.left = 'auto';
-            touchDraggedItem.style.top = 'auto';
 
-            // 모든 드롭 타겟의 하이라이트를 제거합니다.
-            modalDropTargets.forEach(t => t.classList.remove('drop-hover'));
+            // [수정] 드래그가 끝나면 z-index를 원래대로 되돌립니다.
+            touchDraggedItem.style.zIndex = 'auto';
+            touchDraggedItem.classList.remove('dragging');
             
-            // 손가락을 뗀 위치의 요소를 확인합니다.
+            modalDropTargets.forEach(t => t.classList.remove('drop-hover'));
             let touch = e.changedTouches[0];
             let elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
             let dropTarget = elementUnderTouch ? elementUnderTouch.closest('.drop-target') : null;
 
-            // 올바른 드롭 타겟에 놓았는지 확인합니다.
+            // 스타일을 먼저 초기화합니다.
+            touchDraggedItem.style.position = 'static';
+            touchDraggedItem.style.left = 'auto';
+            touchDraggedItem.style.top = 'auto';
+
             if (dropTarget && dropTarget.dataset.type === touchDraggedItem.dataset.type) {
-                touchDraggedItem.remove(); // 아이템 제거
+                // [수정] .remove() 대신 .appendChild()로 아이템을 상자 안으로 이동시킵니다.
+                dropTarget.appendChild(touchDraggedItem);
+                touchDraggedItem.setAttribute('draggable', 'false'); // 다시 드래그 안되게 설정
+                touchDraggedItem.classList.remove('cursor-grab');
+                touchDraggedItem.classList.add('cursor-not-allowed');
+                
                 completedItems++;
                 if (completedItems === totalItems) {
                     showClue("정보 분류 성공! 첫 번째 비밀번호는 '3' 이야.");
@@ -608,7 +616,7 @@
             } else {
                 showFeedback(false, "다시 생각해봐!");
             }
-            touchDraggedItem = null; // 드래그 완료 후 초기화
+            touchDraggedItem = null;
         });
     });
 }
