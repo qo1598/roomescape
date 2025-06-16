@@ -121,7 +121,7 @@
             <div class="bg-white rounded-2xl p-8 shadow-2xl text-center w-full max-w-md">
                 <div class="text-8xl mb-4">🦉</div>
                 <h2 class="text-3xl font-bold mb-4 text-gray-800">탐험을 시작하기 전에...</h2>
-                <p class="text-lg mb-6 text-gray-600">너의 이름과 학년, 반을 알려주면<br>내가 미션을 해결하는 데 도움을 줄게!</p>
+                <p class="text-lg mb-6 text-gray-600">너의 이름과 학년, 반을 알려주면<br>내가 미션을 해결하는 데 도움을 줄게!<br>그리고 게임을 진행하다가 도움이 필요하면 나를 눌러줘!</p>
                 <div class="space-y-4">
                     <input id="player-name" type="text" placeholder="이름을 입력하세요" class="w-full p-3 border-2 border-gray-300 rounded-lg text-xl text-center">
                     <div class="flex gap-4">
@@ -159,7 +159,7 @@
                 <h1 class="text-4xl font-bold mb-2 text-yellow-600">🎉 임무 완수! 🎉</h1>
                 <h2 class="text-2xl font-bold mb-4">디지털 시민 인증서</h2>
                 <div class="text-8xl my-4">🏆</div>
-                <p class="text-xl mb-2">위 어린이는 본 방탈출의 모든 과정을 통과하여<br>올바른 정보통신윤리 의식을 갖추었음을 인정합니다.</p>
+                <p class="text-xl mb-2">위 어린이는 본 방탈출의 모든 과정을 통과하여<br>올바른 디지털 사용을 위한 모든 준비를 갖추었음을 인정합니다.</p>
                 <p id="final-player-name" class="text-3xl font-extrabold my-4 text-blue-600"></p>
                 <p id="final-time" class="text-lg font-semibold text-gray-600"></p>
                 <div class="mt-6 w-full">
@@ -210,7 +210,7 @@
             // 이 API 키는 실제 동작하지 않는 예시입니다. 실제 키를 사용하셔야 합니다.
             const apiKey = "AIzaSyBr3C6s-vWZR9LfI_Kc72jLQsI3bemd-Fk"; 
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-            showClue("<p class='text-2xl'>AI 조수가 힌트를 생각하고 있어요... 🤔</p>");
+            showClue("<p class='text-2xl'>AI 조수인 부엉이가 힌트를 생각하고 있어요... 🤔</p>");
             try {
                 const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
                 const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -368,7 +368,7 @@
         
         // --- 단계별 렌더링 함수들 ---
         function renderStage1(stage) {
-            stageContent.innerHTML = `<div id="laptop" class="absolute interactive-object" style="top: 58%; left: 8%; width: 30%; height: 30%;"></div><div id="books" class="absolute interactive-object" style="top: 65%; left: 39%; width: 15%; height: 20%;"></div><div id="frame" class="absolute interactive-object" style="top: 15%; left: 45%; width: 14%; height: 33%;"></div><div id="switch" class="absolute interactive-object" style="top: 46%; left: 58%; width: 7%; height: 10%;"></div><div id="door" class="absolute interactive-object" style="top: 10%; left: 65%; width: 23%; height: 88%;"></div>`;
+            stageContent.innerHTML = `<div id="laptop" class="absolute interactive-object" style="top: 58%; left: 5%; width: 15%; height: 30%;"></div><div id="books" class="absolute interactive-object" style="top: 65%; left: 33%; width: 15%; height: 20%;"></div><div id="frame" class="absolute interactive-object" style="top: 15%; left: 40%; width: 14%; height: 33%;"></div><div id="switch" class="absolute interactive-object" style="top: 40%; left: 62%; width: 5%; height: 10%;"></div><div id="door" class="absolute interactive-object" style="top: 10%; left: 70%; width: 23%; height: 88%;"></div>`;
             document.getElementById('books').onclick = () => { if(gameState.stageHintsFound[0]) return showClue("정보 보석은 모두 분류했어! 첫 번째 비밀번호는 '3'이었지."); showDragDropPuzzleModal(); };
             document.getElementById('laptop').onclick = () => { if(gameState.stageHintsFound[1]) return showClue("컴퓨터 퀴즈는 이미 풀었어. 두 번째 비밀번호는 '5' 였지."); showClue(`<h3 class="text-2xl font-bold mb-4">보안 퀴즈!</h3><p class="text-xl mb-4">온라인에서 만난 낯선 사람에게 알려줘도 안전한 정보는?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="false">내 집 주소</button><button class="choice-btn" data-correct="true">좋아하는 게임</button><button class="choice-btn" data-correct="false">학교 이름</button><button class="choice-btn" data-correct="false">핸드폰 번호</button></div>`, false); setupQuizChoices(1, "정답! 두 번째 비밀번호는 '5'야. 잘 기억해둬!"); };
             document.getElementById('frame').onclick = () => { showClue("액자 뒤에 무언가 적혀있다... <br><br> '비밀번호를 안전하게 관리하는 건 정말 중요해. 특히 우리집 현관문처럼 여섯 글자로 된 건 더!' <br><br> <strong>세 번째 비밀번호는 '6' 인 것 같다!</strong>"); if (!gameState.stageHintsFound[2]) { gameState.stageHintsFound[2] = true; updateHintTracker(); } };
@@ -377,7 +377,7 @@
         }
         
         function renderStage2(stage) {
-            stageContent.innerHTML = `<div id="chalkboard" class="absolute interactive-object" style="top: 25%; left: 28%; width: 44%; height: 34%;"></div><div id="computer" class="absolute interactive-object" style="top: 40%; left: 3%; width: 22%; height: 26%;"></div><div id="pencil-case" class="absolute interactive-object" style="top: 73%; left: 45%; width: 22%; height: 18%;"></div><div id="speaker" class="absolute interactive-object" style="top: 15%; left: 16%; width: 6%; height: 11%;"></div><div id="door" class="absolute interactive-object" style="top: 19%; left: 78%; width: 18%; height: 75%;"></div>`;
+            stageContent.innerHTML = `<div id="chalkboard" class="absolute interactive-object" style="top: 20%; left: 28%; width: 44%; height: 34%;"></div><div id="computer" class="absolute interactive-object" style="top: 35%; left: 2%; width: 20%; height: 23%;"></div><div id="pencil-case" class="absolute interactive-object" style="top: 73%; left: 63%; width: 12%; height: 18%;"></div><div id="speaker" class="absolute interactive-object" style="top: 12%; left: 16%; width: 6%; height: 11%;"></div><div id="door" class="absolute interactive-object" style="top: 19%; left: 78%; width: 18%; height: 60%;"></div>`;
             document.getElementById('chalkboard').onclick = () => { if(gameState.stageHintsFound[0]) return showClue("칠판 퀴즈는 이미 풀었어! 첫 번째 비밀번호는 '1'이었지."); showClue(`<h3 class="text-2xl font-bold mb-4">칠판 퀴즈!</h3><p class="text-xl mb-4">다음 중 사이버폭력에 해당하지 않는 것은?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="true">친구에게 칭찬 댓글 달기</button><button class="choice-btn" data-correct="false">단체 대화방에서 친구 욕하기</button><button class="choice-btn" data-correct="false">친구 사진에 이상한 낙서하기</button><button class="choice-btn" data-correct="false">친구가 싫어하는 별명 부르기</button></div>`, false); setupQuizChoices(0, "맞아! 칭찬은 좋은거야. 첫 번째 비밀번호는 '1'이야."); };
             document.getElementById('computer').onclick = () => { if(gameState.stageHintsFound[1]) return showClue("컴퓨터 문제는 이미 해결했어! 두 번째 비밀번호는 '1'이었지."); showClue("친구가 SNS에 올린 춤 영상에 '너 정말 로봇처럼 뻣뻣하다ㅋㅋ' 라는 댓글이 달렸다.<br><br>이럴 때 우리는 어떻게 행동해야 할까? 친구를 위해 '힘내!' 라는 응원 댓글을 달아주자.<br><br><strong>두 번째 비밀번호는 '1' 이야!</strong>"); if (!gameState.stageHintsFound[1]) { gameState.stageHintsFound[1] = true; updateHintTracker(); } };
             document.getElementById('pencil-case').onclick = () => { if(gameState.stageHintsFound[2]) return showClue("카드 게임은 끝났어! 세 번째 비밀번호는 '7' 이었지."); showMemoryGameModal(); };
@@ -386,7 +386,7 @@
         }
 
         function renderStage3(stage) {
-            stageContent.innerHTML = `<div id="oven" class="absolute interactive-object" style="top: 42%; left: 4%; width: 26%; height: 50%;"></div><div id="book" class="absolute interactive-object" style="top: 72%; left: 29%; width: 42%; height: 25%;"></div><div id="clock" class="absolute interactive-object" style="top: 15%; left: 32%; width: 12%; height: 22%;"></div><div id="jars" class="absolute interactive-object" style="top: 10%; left: 78%; width: 20%; height: 55%;"></div><div id="door" class="absolute interactive-object" style="top: 24%; left: 48%; width: 22%; height: 48%;"></div>`;
+            stageContent.innerHTML = `<div id="oven" class="absolute interactive-object" style="top: 40%; left: 4%; width: 18%; height: 12%;"></div><div id="book" class="absolute interactive-object" style="top: 72%; left: 33%; width: 40%; height: 23%;"></div><div id="clock" class="absolute interactive-object" style="top: 12%; left: 26%; width: 10%; height: 18%;"></div><div id="jars" class="absolute interactive-object" style="top: 53%; left: 63%; width: 13%; height: 27%;"></div><div id="door" class="absolute interactive-object" style="top: 22%; left: 40%; width: 18%; height: 48%;"></div>`;
             document.getElementById('oven').onclick = () => { if(gameState.stageHintsFound[0]) return showClue("화덕 퀴즈는 이미 풀었어! 첫 번째 비밀번호는 '2'였지."); showClue(`<h3 class="text-2xl font-bold mb-4">화덕 퀴즈!</h3><p class="text-xl mb-4">새로운 레시피를 만들 때, 올바른 방법은?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="true">여러 레시피에서 영감을 얻어 나만의 요리 만들기</button><button class="choice-btn" data-correct="false">유명한 셰프의 레시피를 그대로 베껴서 내 것인척 하기</button><button class="choice-btn" data-correct="false">친구의 아이디어를 몰래 훔쳐서 요리하기</button><button class="choice-btn" data-correct="false">맛만 있으면 과정은 상관없다고 생각하기</button></div>`, false); setupQuizChoices(0, "맞아! 창작은 영감에서 시작돼. 첫 번째 비밀번호는 '2'야."); };
             document.getElementById('book').onclick = () => { showClue("오래된 요리책이 있다...<br><br>'위대한 요리는 위대한 레시피에서 나온다. 다른 셰프의 아이디어를 참고했다면, 그에게 존경을 표하는 것을 잊지 말라.'<br><br><strong>두 번째 비밀번호는 '4'인 것 같아!</strong>"); if (!gameState.stageHintsFound[1]) { gameState.stageHintsFound[1] = true; updateHintTracker(); } };
             document.getElementById('clock').onclick = () => { showClue("시계가 1시 20분을 가리키고 있다. 뒷면에 메모가 있다.<br><br>'저작권은 창작한 때부터 작가가 죽고 나서 70년까지 보호된대. 정말 긴 시간이지?'<br><br><strong>세 번째 비밀번호는 '1'이야!</strong>"); if (!gameState.stageHintsFound[2]) { gameState.stageHintsFound[2] = true; updateHintTracker(); } };
@@ -395,7 +395,7 @@
         }
 
         function renderStage4(stage) {
-            stageContent.innerHTML = `<div id="toolbox" class="absolute interactive-object" style="top: 45%; left: 10%; width: 22%; height: 20%;"></div><div id="plant" class="absolute interactive-object" style="top: 10%; left: 15%; width: 10%; height: 25%;"></div><div id="book-stage4" class="absolute interactive-object" style="top: 70%; left: 45%; width: 35%; height: 25%;"></div><div id="box-under" class="absolute interactive-object" style="top: 68%; left: 2%; width: 15%; height: 18%;"></div><div id="door" class="absolute interactive-object" style="top: 33%; left: 70%; width: 17%; height: 52%;"></div>`;
+            stageContent.innerHTML = `<div id="toolbox" class="absolute interactive-object" style="top: 45%; left: 10%; width: 22%; height: 20%;"></div><div id="plant" class="absolute interactive-object" style="top: 10%; left: 15%; width: 10%; height: 20%;"></div><div id="book-stage4" class="absolute interactive-object" style="top: 75%; left: 60%; width: 30%; height: 17%;"></div><div id="box-under" class="absolute interactive-object" style="top: 75%; left: 16%; width: 15%; height: 15%;"></div><div id="door" class="absolute interactive-object" style="top: 28%; left: 60%; width: 15%; height: 40%;"></div>`;
             document.getElementById('toolbox').onclick = () => { if(gameState.stageHintsFound[0]) return showClue("공구상자는 이미 확인했어. 첫 번째 비밀번호는 '1'이었지."); showClue(`<h3 class="text-2xl font-bold mb-4">보안 퀴즈!</h3><p class="text-xl mb-4">다음 중 가장 안전한 비밀번호는 무엇일까?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="false">12345678</button><button class="choice-btn" data-correct="false">mybirthday</button><button class="choice-btn" data-correct="true">MyHappyCat1015!</button><button class="choice-btn" data-correct="false">password</button></div>`, false); setupQuizChoices(0, "훌륭해! 안전한 비밀번호는 중요해. 첫 번째 비밀번호는 '1'이야."); };
             document.getElementById('plant').onclick = () => { showClue("화분에 작은 팻말이 있다.<br><br>'인터넷 세상에 남긴 글은 화분에 심은 씨앗 같아. 한번 퍼지면 다시 주워 담기 어려워. 남을 위한 배려도 잊지 않으면 좋겠어.'<br><br><strong>두 번째 비밀번호는 '0' 인가봐.</strong>"); if (!gameState.stageHintsFound[1]) { gameState.stageHintsFound[1] = true; updateHintTracker(); } };
             document.getElementById('book-stage4').onclick = () => { if(gameState.stageHintsFound[2]) return showClue("다른 그림 찾기는 이미 성공했어! 세 번째 비밀번호는 '1'이었지."); showSpotTheDifferenceModal(); };
@@ -404,7 +404,7 @@
         }
 
         function renderStage5(stage) {
-            stageContent.innerHTML = `<div id="monitor" class="absolute interactive-object" style="top: 25%; left: 5%; width: 25%; height: 40%;"></div><div id="whiteboard" class="absolute interactive-object" style="top: 18%; left: 34%; width: 33%; height: 35%;"></div><div id="cabinet" class="absolute interactive-object" style="top: 66%; left: 53%; width: 12%; height: 18%;"></div><div id="flasks" class="absolute interactive-object" style="top: 48%; left: 40%; width: 20%; height: 20%;"></div><div id="door" class="absolute interactive-object" style="top: 15%; left: 73%; width: 20%; height: 80%;"></div>`;
+            stageContent.innerHTML = `<div id="monitor" class="absolute interactive-object" style="top: 28%; left: 2%; width: 20%; height: 25%;"></div><div id="whiteboard" class="absolute interactive-object" style="top: 20%; left: 23%; width: 30%; height: 30%;"></div><div id="cabinet" class="absolute interactive-object" style="top: 70%; left: 60%; width: 12%; height: 25%;"></div><div id="flasks" class="absolute interactive-object" style="top: 55%; left: 40%; width: 20%; height: 20%;"></div><div id="door" class="absolute interactive-object" style="top: 15%; left: 73%; width: 20%; height: 60%;"></div>`;
             document.getElementById('monitor').onclick = () => { if(gameState.stageHintsFound[0]) return showClue("가짜 뉴스 퀴즈는 해결했어. 첫 번째 비밀번호는 '2'였지."); showClue(`<h3 class="text-2xl font-bold mb-4">가짜 뉴스 판별 퀴즈!</h3><p class="text-xl mb-4">다음 중 가짜 뉴스일 가능성이 가장 높은 것은?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="false">'오늘 오후부터 전국에 비가 오겠습니다' - 기상청</button><button class="choice-btn" data-correct="true">'충격! OO초등학교 급식에서 공룡알 발견!' - 아무개 신문</button><button class="choice-btn" data-correct="false">'내일 월드컵 결승전이 열립니다.' - 공식 스포츠 뉴스</button></div>`, false); setupQuizChoices(0, "맞아! 너무 자극적인 제목은 의심해봐야 해. 첫 번째 비밀번호는 '2'야."); };
             document.getElementById('whiteboard').onclick = () => { showClue("화이트보드에 복잡한 공식이 적혀있다.<br><br>가운데에 빨간 글씨로 'H₂O' 라고 쓰여 있다. 물을 뜻하는 분자식이네!<br><br><strong>두 번째 비밀번호는 '0' 인 것 같아.</strong>"); if (!gameState.stageHintsFound[1]) { gameState.stageHintsFound[1] = true; updateHintTracker(); } };
             document.getElementById('cabinet').onclick = () => { if(gameState.stageHintsFound[2]) return showClue("바이러스 피하기는 성공했어! 세 번째 비밀번호는 '2'였지."); showMissileGameModal(); };
@@ -496,31 +496,122 @@
             setupDragAndDropInModal(items.length);
         }
         
-        function setupDragAndDropInModal(totalItems) {
-            const modalDraggables = clueContent.querySelectorAll('.draggable');
-            const modalDropTargets = clueContent.querySelectorAll('.drop-target');
-            let draggedItem = null, completedItems = 0;
-            modalDraggables.forEach(draggable => {
-                draggable.addEventListener('dragstart', (e) => { draggedItem = e.target; setTimeout(() => e.target.classList.add('dragging'), 0); });
-                draggable.addEventListener('dragend', () => { if(draggedItem) draggedItem.classList.remove('dragging'); draggedItem = null; });
-            });
-            modalDropTargets.forEach(target => {
-                target.addEventListener('dragover', (e) => { e.preventDefault(); target.classList.add('drop-hover'); });
-                target.addEventListener('dragleave', () => { target.classList.remove('drop-hover'); });
-                target.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    target.classList.remove('drop-hover');
-                    if (draggedItem && target.dataset.type === draggedItem.dataset.type) {
-                        draggedItem.remove();
-                        completedItems++;
-                        if (completedItems === totalItems) {
-                            showClue("정보 분류 성공! 첫 번째 비밀번호는 '3' 이야.");
-                            if (!gameState.stageHintsFound[0]) { gameState.stageHintsFound[0] = true; updateHintTracker(); }
-                        }
-                    } else { showFeedback(false, "다시 생각해봐!"); }
-                });
-            });
-        }
+ function setupDragAndDropInModal(totalItems) {
+    const modalDraggables = clueContent.querySelectorAll('.draggable');
+    const modalDropTargets = clueContent.querySelectorAll('.drop-target');
+    let draggedItem = null;
+    let completedItems = 0;
+
+    // --- 1. 기존 마우스 이벤트 (PC용) ---
+    // 이 코드는 그대로 둡니다.
+    modalDraggables.forEach(draggable => {
+        draggable.addEventListener('dragstart', (e) => {
+            draggedItem = e.target;
+            setTimeout(() => e.target.classList.add('dragging'), 0);
+        });
+        draggable.addEventListener('dragend', () => {
+            if (draggedItem) draggedItem.classList.remove('dragging');
+            draggedItem = null;
+        });
+    });
+
+    modalDropTargets.forEach(target => {
+        target.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            target.classList.add('drop-hover');
+        });
+        target.addEventListener('dragleave', () => {
+            target.classList.remove('drop-hover');
+        });
+        target.addEventListener('drop', (e) => {
+            e.preventDefault();
+            target.classList.remove('drop-hover');
+            if (draggedItem && target.dataset.type === draggedItem.dataset.type) {
+                draggedItem.remove();
+                completedItems++;
+                if (completedItems === totalItems) {
+                    showClue("정보 분류 성공! 첫 번째 비밀번호는 '3' 이야.");
+                    if (!gameState.stageHintsFound[0]) {
+                        gameState.stageHintsFound[0] = true;
+                        updateHintTracker();
+                    }
+                }
+            } else {
+                showFeedback(false, "다시 생각해봐!");
+            }
+        });
+    });
+
+    // --- 2. 터치 이벤트를 위한 코드 추가 (태블릿용) ---
+    let touchDraggedItem = null; // 터치용으로 드래그되는 아이템
+    let originalPosition = { x: 0, y: 0 }; // 원래 위치로 돌아가기 위한 변수
+
+    modalDraggables.forEach(draggable => {
+        draggable.addEventListener('touchstart', (e) => {
+            touchDraggedItem = e.target;
+            
+            // 드래그 시작 시 아이템을 살짝 투명하게 만듭니다.
+            touchDraggedItem.style.opacity = '0.5'; 
+        }, { passive: true });
+
+        draggable.addEventListener('touchmove', (e) => {
+            if (!touchDraggedItem) return;
+            e.preventDefault(); // 화면 스크롤 방지
+
+            // 손가락 위치를 따라 아이템이 움직이도록 합니다.
+            let touch = e.targetTouches[0];
+            touchDraggedItem.style.position = 'absolute'; // 자유롭게 움직이도록 설정
+            touchDraggedItem.style.left = touch.pageX - touchDraggedItem.offsetWidth / 2 + 'px';
+            touchDraggedItem.style.top = touch.pageY - touchDraggedItem.offsetHeight / 2 + 'px';
+
+            // 모든 드롭 타겟의 하이라이트를 일단 제거합니다.
+            modalDropTargets.forEach(t => t.classList.remove('drop-hover'));
+
+            // 현재 손가락 아래에 있는 요소를 확인합니다.
+            let elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+            let dropTarget = elementUnderTouch ? elementUnderTouch.closest('.drop-target') : null;
+            
+            // 드롭 타겟 위에 있다면 하이라이트 효과를 줍니다.
+            if(dropTarget){
+                dropTarget.classList.add('drop-hover');
+            }
+        });
+
+        draggable.addEventListener('touchend', (e) => {
+            if (!touchDraggedItem) return;
+            
+            // 스타일을 원래대로 복구합니다.
+            touchDraggedItem.style.opacity = '1';
+            touchDraggedItem.style.position = 'static';
+            touchDraggedItem.style.left = 'auto';
+            touchDraggedItem.style.top = 'auto';
+
+            // 모든 드롭 타겟의 하이라이트를 제거합니다.
+            modalDropTargets.forEach(t => t.classList.remove('drop-hover'));
+            
+            // 손가락을 뗀 위치의 요소를 확인합니다.
+            let touch = e.changedTouches[0];
+            let elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
+            let dropTarget = elementUnderTouch ? elementUnderTouch.closest('.drop-target') : null;
+
+            // 올바른 드롭 타겟에 놓았는지 확인합니다.
+            if (dropTarget && dropTarget.dataset.type === touchDraggedItem.dataset.type) {
+                touchDraggedItem.remove(); // 아이템 제거
+                completedItems++;
+                if (completedItems === totalItems) {
+                    showClue("정보 분류 성공! 첫 번째 비밀번호는 '3' 이야.");
+                    if (!gameState.stageHintsFound[0]) {
+                        gameState.stageHintsFound[0] = true;
+                        updateHintTracker();
+                    }
+                }
+            } else {
+                showFeedback(false, "다시 생각해봐!");
+            }
+            touchDraggedItem = null; // 드래그 완료 후 초기화
+        });
+    });
+}
         
         function showSpotTheDifferenceModal() {
             const modalHtml = `
@@ -709,38 +800,47 @@
             }
         }
         
-        function showKeypad(correctPassword) {
-            const keypadDisplay = keypadModal.querySelector('#keypad-display');
-            const keypadGrid = keypadModal.querySelector('.grid');
-            keypadDisplay.textContent = '';
-            keypadGrid.innerHTML = '';
-            const buttons = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C', '0', 'OK'];
-            buttons.forEach(label => {
-                const btn = document.createElement('button');
-                btn.textContent = label;
-                btn.className = 'keypad-button bg-gray-500 text-white text-2xl font-bold p-4 rounded-lg hover:bg-gray-400 transition-colors';
-                if(label === 'OK') btn.classList.add('bg-green-600', 'hover:bg-green-500');
-                if(label === 'C') btn.classList.add('bg-red-600', 'hover:bg-red-500');
-                btn.onclick = () => {
-                    if(label === 'C') keypadDisplay.textContent = '';
-                    else if (label === 'OK') {
-                        if(keypadDisplay.textContent === correctPassword) {
-                            keypadModal.classList.add('hidden');
-                            showFeedback(true, "철컥! 문이 열렸다!");
-                            checkStageCompletion();
-                        } else {
-                            keypadModal.classList.add('hidden');
-                            showFeedback(false, "비밀번호가 틀렸어!");
-                        }
-                    } else if(keypadDisplay.textContent.length < 4) {
-                        keypadDisplay.textContent += label;
-                    }
-                };
-                keypadGrid.appendChild(btn);
-            });
-            keypadModal.classList.remove('hidden');
-        }
+function showKeypad(correctPassword) {
+            const keypadDisplay = keypadModal.querySelector('#keypad-display');
+            const keypadGrid = keypadModal.querySelector('.grid');
+            keypadDisplay.textContent = '';
+            keypadGrid.innerHTML = '';
+            const buttons = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C', '0', 'OK'];
+            buttons.forEach(label => {
+                const btn = document.createElement('button');
+                btn.textContent = label;
+                btn.className = 'keypad-button bg-gray-500 text-white text-2xl font-bold p-4 rounded-lg hover:bg-gray-400 transition-colors';
+                if(label === 'OK') btn.classList.add('bg-green-600', 'hover:bg-green-500');
+                if(label === 'C') btn.classList.add('bg-red-600', 'hover:bg-red-500');
+                btn.onclick = () => {
+                    if(label === 'C') keypadDisplay.textContent = '';
+                    else if (label === 'OK') {
+                        if(keypadDisplay.textContent === correctPassword) {
+                            keypadModal.classList.add('hidden');
+                            showFeedback(true, "철컥! 문이 열렸다!");
+                            checkStageCompletion();
+                        } else {
+                            keypadModal.classList.add('hidden');
+                            showFeedback(false, "비밀번호가 틀렸어!");
+                        }
+                    } else if(keypadDisplay.textContent.length < 4) {
+                        keypadDisplay.textContent += label;
+                    }
+                };
+                keypadGrid.appendChild(btn);
+            });
+            keypadModal.classList.remove('hidden');
 
+            // --- 여기부터가 수정된 부분입니다 ---
+            // 모달의 배경 영역을 클릭(터치)했을 때 모달을 닫도록 이벤트를 추가합니다.
+            keypadModal.onclick = (e) => {
+                // 클릭된 대상(e.target)이 회색 배경(keypadModal) 자체일 때만 창을 닫습니다.
+                if (e.target === keypadModal) {
+                    keypadModal.classList.add('hidden');
+                }
+            };
+            // --- 여기까지 수정 ---
+        }
         function checkStageCompletion() {
             if (gameState.currentStage < gameData.stages.length - 1) {
                 dialogueText.textContent = `훌륭해, ${gameState.playerName}! 다음 단계로 갈 수 있는 열쇠를 얻었어!`;
