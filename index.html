@@ -201,19 +201,6 @@
                 <div class="grid grid-cols-3 gap-2"></div>
             </div>
         </div>
-
-        <div id="builder-screen" class="hidden absolute inset-0 bg-gray-900 bg-opacity-90 overflow-y-auto z-40 p-6 text-gray-800">
-            <div class="bg-white rounded-2xl p-6 shadow-lg max-w-3xl mx-auto w-full">
-                <h2 class="text-3xl font-bold mb-4 text-center">방탈출 게임 메이커</h2>
-                <div id="stages-container" class="space-y-6"></div>
-                <button id="add-stage-button" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">단계 추가</button>
-                <div class="flex justify-end gap-4 mt-6">
-                    <button id="download-json-button" class="bg-green-500 text-white px-4 py-2 rounded">JSON 다운로드</button>
-                    <button id="apply-game-data-button" class="bg-yellow-500 text-white px-4 py-2 rounded">이 게임으로 플레이</button>
-                    <button id="close-builder-button" class="bg-gray-500 text-white px-4 py-2 rounded">닫기</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -251,8 +238,8 @@
             })));
         }
 
-        // --- 기본 게임 데이터 ---
-        const defaultGameData = {
+        // --- 게임 데이터 ---
+        const gameData = {
             stages: [
                 {
                     title: "1단계: 개인정보의 방",
@@ -297,8 +284,6 @@
             ]
         };
 
-        let gameData = defaultGameData;
-
         // --- 게임 상태 변수 ---
         let gameState = {
             playerName: '', 
@@ -335,18 +320,6 @@
         const closeClueModalBtn = document.getElementById('close-clue-modal');
         const finalPlayerName = document.getElementById('final-player-name');
         const finalTime = document.getElementById('final-time');
-        const gameDataFileInput = document.getElementById('game-data-file');
-        const openBuilderButton = document.getElementById('open-builder-button');
-        const builderScreen = document.getElementById('builder-screen');
-        const closeBuilderButton = document.getElementById('close-builder-button');
-        const addStageButton = document.getElementById('add-stage-button');
-        const stagesContainer = document.getElementById('stages-container');
-        const applyGameDataButton = document.getElementById('apply-game-data-button');
-        const downloadJsonButton = document.getElementById('download-json-button');
-
-        startButton.disabled = true;
-        startButton.classList.add('bg-gray-500', 'cursor-not-allowed');
-        startButton.textContent = '게임 불러오는 중...';
 
         // --- 게임 초기화 및 시작 ---
         function initGame() {
@@ -976,141 +949,27 @@ confirmEndButton.addEventListener('click', () => {
   confirmEndButton.classList.add('bg-gray-400','cursor-not-allowed');
 });
         
-        // --- 기본 게임 데이터 로딩 ---
-        async function loadDefaultGameData() {
-            try {
-                const res = await fetch('gameData.json');
-                if (res.ok) {
-                    gameData = await res.json();
-                }
-            } catch (e) {
-                console.warn('gameData.json 로드 실패, 기본 데이터 사용');
-            }
-            loadAssets();
-        }
+        // --- 이미지 로딩 및 게임 시작 버튼 활성화 ---
+        const imageUrls = gameData.stages.map(stage => stage.background).filter(url => !url.startsWith('https://placehold.co'));
+        imageUrls.push('https://i.ibb.co/XZ9yK1qF/image.png');
+        imageUrls.push('https://i.ibb.co/hFnYJpFC/3.png');
+        imageUrls.push('https://i.ibb.co/fVJvQWJ2/4.png');
 
-        function loadCustomGameData(file) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                try {
-                    gameData = JSON.parse(e.target.result);
-                    loadAssets();
-                    showFeedback(true, '커스텀 게임 데이터를 불러왔어요!');
-                } catch (err) {
-                    showFeedback(false, 'JSON 형식이 올바르지 않아요.');
-                }
-            };
-            reader.readAsText(file);
-        }
+        startButton.textContent = '게임 불러오는 중...';
+        startButton.disabled = true;
+        startButton.classList.add('bg-gray-500', 'cursor-not-allowed');
 
-        function loadAssets() {
-            const imageUrls = gameData.stages.map(s => s.background).filter(u => !u.startsWith('https://placehold.co'));
-            imageUrls.push('https://i.ibb.co/XZ9yK1qF/image.png');
-            imageUrls.push('https://i.ibb.co/hFnYJpFC/3.png');
-            imageUrls.push('https://i.ibb.co/fVJvQWJ2/4.png');
-
-            startButton.textContent = '게임 불러오는 중...';
-            startButton.disabled = true;
-            startButton.classList.add('bg-gray-500', 'cursor-not-allowed');
-
-            preloadImages(imageUrls)
-                .then(() => {
-                    startButton.textContent = '탐험 임무 시작!';
-                    startButton.disabled = false;
-                    startButton.classList.remove('bg-gray-500', 'cursor-not-allowed');
-                })
-                .catch(error => {
-                    console.error('이미지 로딩 중 오류가 발생했습니다:', error);
-                    startButton.textContent = '오류! 새로고침 해주세요.';
-                    startButton.classList.add('bg-red-500');
-                });
-        }
-
-        // --- 게임 메이커 기능 ---
-        function renderStageForms() {
-            stagesContainer.innerHTML = '';
-            gameData.stages.forEach((stage, idx) => addStageForm(stage, idx + 1));
-        }
-
-        function addStageForm(data = {}, displayIndex) {
-            const div = document.createElement('div');
-            div.className = 'stage-form border-2 border-gray-300 p-4 rounded-lg';
-            div.innerHTML = `
-                <h3 class="text-xl font-bold mb-2">단계 <span class="stage-index">${displayIndex || stagesContainer.children.length + 1}</span></h3>
-                <label class="block mb-1">제목 <input type="text" class="stage-title w-full p-2 border rounded"/></label>
-                <label class="block mb-1 mt-2">배경 이미지 URL <input type="text" class="stage-background w-full p-2 border rounded"/></label>
-                <label class="block mb-1 mt-2">대사 <textarea class="stage-dialogue w-full p-2 border rounded"></textarea></label>
-                <label class="block mb-1 mt-2">비밀번호 <input type="text" class="stage-password w-full p-2 border rounded"/></label>
-                <label class="block mb-1 mt-2">힌트 아이콘 (쉼표로 구분) <input type="text" class="stage-hint-icons w-full p-2 border rounded"/></label>
-                <button class="remove-stage-button bg-red-500 text-white px-2 py-1 rounded mt-2">삭제</button>`;
-            stagesContainer.appendChild(div);
-            if (data.title) div.querySelector('.stage-title').value = data.title;
-            if (data.background) div.querySelector('.stage-background').value = data.background;
-            if (data.dialogue) div.querySelector('.stage-dialogue').value = data.dialogue;
-            if (data.password) div.querySelector('.stage-password').value = data.password;
-            if (data.hintIcons) div.querySelector('.stage-hint-icons').value = data.hintIcons.join(', ');
-            div.querySelector('.remove-stage-button').onclick = () => {
-                div.remove();
-                updateStageIndexes();
-            };
-        }
-
-        function updateStageIndexes() {
-            stagesContainer.querySelectorAll('.stage-index').forEach((el, i) => {
-                el.textContent = i + 1;
+        preloadImages(imageUrls)
+            .then(() => {
+                startButton.textContent = '탐험 임무 시작!';
+                startButton.disabled = false;
+                startButton.classList.remove('bg-gray-500', 'cursor-not-allowed');
+            })
+            .catch(error => {
+                console.error("이미지 로딩 중 오류가 발생했습니다:", error);
+                startButton.textContent = '오류! 새로고침 해주세요.';
+                startButton.classList.add('bg-red-500');
             });
-        }
-
-        function gatherGameDataFromForms() {
-            const stages = [];
-            stagesContainer.querySelectorAll('.stage-form').forEach(form => {
-                stages.push({
-                    title: form.querySelector('.stage-title').value,
-                    background: form.querySelector('.stage-background').value,
-                    dialogue: form.querySelector('.stage-dialogue').value,
-                    type: 'escape_room',
-                    password: form.querySelector('.stage-password').value,
-                    hintIcons: form.querySelector('.stage-hint-icons').value.split(',').map(s => s.trim()).filter(Boolean)
-                });
-            });
-            return { stages };
-        }
-
-        openBuilderButton.addEventListener('click', () => {
-            renderStageForms();
-            builderScreen.classList.remove('hidden');
-        });
-
-        closeBuilderButton.addEventListener('click', () => {
-            builderScreen.classList.add('hidden');
-        });
-
-        addStageButton.addEventListener('click', () => {
-            addStageForm();
-            updateStageIndexes();
-        });
-
-        applyGameDataButton.addEventListener('click', () => {
-            gameData = gatherGameDataFromForms();
-            builderScreen.classList.add('hidden');
-            loadAssets();
-            showFeedback(true, '새로운 게임 데이터가 적용되었습니다!');
-        });
-
-        downloadJsonButton.addEventListener('click', () => {
-            const data = gatherGameDataFromForms();
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'gameData.json';
-            a.click();
-        });
-
-        gameDataFileInput.addEventListener('change', (e) => {
-            if (e.target.files[0]) loadCustomGameData(e.target.files[0]);
-        });
-
-        loadDefaultGameData();
     });
     </script>
 </body>
