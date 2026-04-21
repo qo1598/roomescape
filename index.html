@@ -108,7 +108,7 @@
 
     <div id="game-container" class="game-container bg-cover bg-center rounded-2xl shadow-2xl flex flex-col items-center justify-center p-0 relative">
 
-        <div id="screen-start" class="w-full h-full flex flex-col items-center justify-end text-center text-white bg-cover bg-center rounded-xl" style="background-image: url('https://i.ibb.co/XZ9yK1qF/image.png');">
+        <div id="screen-start" class="w-full h-full flex flex-col items-center justify-end text-center text-white bg-cover bg-center rounded-xl" style="background-image: url('https://i.ibb.co/S1yQqcS/Gemini-Generated-Image-giixcbgiixcbgiix.png');">
             <div class="bg-black bg-opacity-70 p-8 rounded-t-xl mb-12 max-w-3xl">
                 <p class="text-xl md:text-2xl mb-8">디지털 세상을 어지럽히는 문제를 풀고<br>평화를 되찾기 위해 경동 어린이 탐험대의 도움이 필요해!</p>
                 <button id="start-button" class="bg-yellow-400 text-gray-800 text-3xl font-bold py-4 px-10 rounded-full shadow-lg hover:bg-yellow-300 transform hover:scale-105 transition-all duration-300">
@@ -208,8 +208,8 @@
         // --- Gemini API 호출 함수 ---
         async function callGemini(prompt) {
             // 이 API 키는 실제 동작하지 않는 예시입니다. 실제 키를 사용하셔야 합니다.
-            const apiKey = "AIzaSyBr3C6s-vWZR9LfI_Kc72jLQsI3bemd-Fk"; 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            const apiKey = "AIzaSyCueAxfyt4ZpqwLotVSrBzy05aKJ4hP4Ro"; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`;
             showClue("<p class='text-2xl'>AI 조수인 부엉이가 힌트를 생각하고 있어요... 🤔</p>");
             try {
                 const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
