@@ -7,99 +7,41 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Jua', sans-serif;
-        }
-        .jua-font {
-            font-family: 'Jua', sans-serif;
-        }
+        body { font-family: 'Jua', sans-serif; }
+        .jua-font { font-family: 'Jua', sans-serif; }
         .game-container {
-            width: 100%;
-            max-width: 1000px;
-            height: 100vh;
-            max-height: 720px;
-            overflow: hidden;
+            width: 100%; max-width: 1000px; height: 100vh; max-height: 720px;
+            overflow: hidden; position: relative;
         }
-        .modal-bg, .modal-bg-darker {
-            animation: fadeIn 0.3s ease-out;
-        }
-        .modal-content, .keypad-modal {
-            animation: zoomIn 0.3s ease-out;
-        }
+        .modal-bg, .modal-bg-darker { animation: fadeIn 0.3s ease-out; }
+        .modal-content, .keypad-modal { animation: zoomIn 0.3s ease-out; }
         .interactive-object {
-            cursor: pointer;
-            transition: background-color 0.2s, border 0.2s;
-            background-color: rgba(255, 255, 0, 0); /* Transparent background */
-            border: 3px solid transparent;
-            border-radius: 10px;
+            cursor: pointer; transition: background-color 0.2s, border 0.2s;
+            background-color: rgba(255, 255, 0, 0); border: 3px solid transparent; border-radius: 10px;
         }
         .interactive-object:hover {
-            background-color: rgba(255, 255, 0, 0.2);
-            border: 3px solid #fef08a;
+            background-color: rgba(255, 255, 0, 0.2); border: 3px solid #fef08a;
         }
         #ai-assistant-owl:hover {
-            cursor: pointer;
-            transform: scale(1.1);
-            filter: drop-shadow(0 0 10px #67e8f9); /* cyan-300 */
+            cursor: pointer; transform: scale(1.1); filter: drop-shadow(0 0 10px #67e8f9);
         }
+        
+        /* 메모리 카드 게임용 스타일 */
         .memory-card {
-            perspective: 1000px;
-            cursor: pointer;
+            perspective: 1000px; cursor: pointer; width: 60px; height: 60px;
         }
         .memory-card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
+            position: relative; width: 100%; height: 100%; text-align: center;
+            transition: transform 0.6s; transform-style: preserve-3d;
         }
-        .memory-card.is-flipped .memory-card-inner {
-            transform: rotateY(180deg);
-        }
+        .memory-card.is-flipped .memory-card-inner { transform: rotateY(180deg); }
         .memory-card-front, .memory-card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0.5rem;
-            font-size: 1.75rem;
-            line-height: 2.25rem;
-            text-align: center;
+            position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            display: flex; align-items: center; justify-content: center; border-radius: 0.5rem;
         }
-        .memory-card-front {
-            background-color: #60a5fa;
-            color: white;
-            font-size: 2.5rem;
-        }
-        .memory-card-back {
-            background-color: #fde047;
-            color: #1f2937;
-            transform: rotateY(180deg);
-        }
-        .hidden-object, .spot-the-diff {
-            position: absolute;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: border-color 0.3s;
-              border: 3px solid transparent;
-        }
-        .hidden-object.found, .spot-the-diff.found {
-            border-color: #f87171; /* red-400 */
-            background-color: rgba(248, 113, 113, 0.2);
-            cursor: not-allowed;
-        }
-         .hidden-object:hover, .spot-the-diff:hover {
-            background-color: rgba(255, 255, 0, 0.3);
-            border-color: #fef08a;
-        }
-        #missile-game-canvas {
-            background-color: #1f2937; /* gray-800 */
-            border-radius: 0.5rem;
-        }
+        .memory-card-front { background-color: #60a5fa; color: white; font-size: 1.5rem; }
+        .memory-card-back { background-color: #fde047; color: #1f2937; transform: rotateY(180deg); font-size: 1.2rem; font-weight: bold; }
+        
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
@@ -140,12 +82,12 @@
                     <span id="stage-indicator" class="text-lg text-gray-300 font-semibold"></span>
                 </div>
                 <div id="timer-display" class="text-2xl text-white font-bold">00:00</div>
-                <div id="hint-tracker" class="flex space-x-2"></div>
+                <div id="hint-tracker" class="flex space-x-2 text-2xl"></div>
             </div>
 
             <div id="stage-content" class="flex-1 relative bg-cover bg-center"></div>
 
-            <div id="dialogue-box" class="w-full bg-gray-900 bg-opacity-80 p-4 flex items-center space-x-4 z-10 rounded-b-xl">
+            <div id="dialogue-box" class="w-full bg-gray-900 bg-opacity-80 p-4 flex items-center space-x-4 z-10 rounded-b-xl h-32">
                 <div id="ai-assistant-owl" class="text-6xl flex-shrink-0 transition-transform duration-200">🦉</div>
                 <div class="text-white text-lg flex-1">
                     <p id="dialogue-text"></p>
@@ -154,7 +96,7 @@
             </div>
         </div>
 
-        <div id="screen-end" class="hidden w-full h-full flex flex-col items-center justify-center text-center text-white bg-cover bg-center p-8" style="background-image: url('https://placehold.co/1000x720/2e1065/ffffff?text=MISSION%20COMPLETE!')">
+        <div id="screen-end" class="hidden w-full h-full flex flex-col items-center justify-center text-center text-white bg-cover bg-center p-8" style="background-color: #2e1065;">
              <div class="w-full max-w-2xl bg-yellow-100 text-gray-800 p-8 rounded-2xl shadow-2xl border-4 border-yellow-400 transform flex flex-col items-center">
                 <h1 class="text-4xl font-bold mb-2 text-yellow-600">🎉 임무 완수! 🎉</h1>
                 <h2 class="text-2xl font-bold mb-4">디지털 시민 인증서</h2>
@@ -164,21 +106,20 @@
                 <p id="final-time" class="text-lg font-semibold text-gray-600"></p>
                 <div class="mt-6 w-full">
                     <label for="feedback-input" class="text-xl font-bold">소감을 남겨주세요!</label>
-                    <textarea id="feedback-input" rows="3" class="w-full mt-2 p-2 border-2 border-gray-300 rounded-lg text-lg" placeholder="방탈출 활동이 어땠는지, 올바른 디지털 이용에 대해 새롭게 알게 된 점 등을 자유롭게 적어주세요."></textarea>
+                    <textarea id="feedback-input" rows="3" class="w-full mt-2 p-2 border-2 border-gray-300 rounded-lg text-lg" placeholder="방탈출 활동이 어땠는지, 새롭게 알게 된 점 등을 자유롭게 적어주세요."></textarea>
                 </div>
-                <button id="confirm-end-button" class="mt-8 bg-blue-500 text-white text-2xl font-bold py-3 px-8 rounded-full shadow-lg hover:bg-blue-400 transform hover:scale-105 transition-all duration-300">확인</button>
+                <button id="confirm-end-button" class="mt-8 bg-blue-500 text-white text-2xl font-bold py-3 px-8 rounded-full shadow-lg hover:bg-blue-400 transform hover:scale-105 transition-all duration-300">인증 및 기록 제출</button>
             </div>
         </div>
 
-<!-- CORS 우회용 숨은 iframe & 폼 -->
-<iframe name="submitFrame" style="display:none;"></iframe>
-<form id="submitForm" action="https://script.google.com/macros/s/AKfycbwcmyVX9F8oXdTuYkPY_8cR-fNEcr0UMYJSplhH1j94FMy2HsHmgj1IwwsOmvNxMM6B/exec" method="post" target="submitFrame" style="display:none;">
-  <input type="hidden" name="name">
-  <input type="hidden" name="grade">
-  <input type="hidden" name="class">
-  <input type="hidden" name="time">
-  <input type="hidden" name="feedback">
-</form>
+        <iframe name="submitFrame" style="display:none;"></iframe>
+        <form id="submitForm" action="https://script.google.com/macros/s/여기에_선생님의_웹앱_주소를_넣으세요/exec" method="post" target="submitFrame" style="display:none;">
+            <input type="hidden" name="name" id="form-name">
+            <input type="hidden" name="grade" id="form-grade">
+            <input type="hidden" name="class" id="form-class">
+            <input type="hidden" name="time" id="form-time">
+            <input type="hidden" name="feedback" id="form-feedback">
+        </form>
         
         <div id="feedback-modal" class="hidden absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center modal-bg z-50">
             <div class="modal-content bg-white rounded-2xl p-8 text-center shadow-lg">
@@ -190,52 +131,53 @@
         <div id="clue-modal" class="hidden absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center modal-bg-darker z-40">
             <div class="modal-content bg-yellow-100 rounded-2xl p-8 shadow-lg w-11/12 max-w-4xl text-gray-800 relative">
                 <button id="close-clue-modal" class="absolute top-2 right-4 text-3xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
-                <div id="clue-dynamic-content" class="text-center">
-                    </div>
+                <div id="clue-dynamic-content" class="text-center flex flex-col items-center justify-center min-h-[200px]">
+                </div>
             </div>
         </div>
         
         <div id="keypad-modal" class="hidden absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center modal-bg-darker z-30">
             <div class="keypad-modal bg-gray-700 rounded-2xl p-6 shadow-lg w-11/12 max-w-xs">
-                <div id="keypad-display" class="bg-gray-900 text-white text-4xl text-right rounded-lg h-16 mb-4 flex items-center justify-end pr-4"></div>
-                <div class="grid grid-cols-3 gap-2"></div>
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-white">비밀번호 입력</span>
+                    <button id="close-keypad" class="text-gray-400 hover:text-white text-xl">&times;</button>
+                </div>
+                <div id="keypad-display" class="bg-gray-900 text-white text-4xl text-center rounded-lg h-16 mb-4 flex items-center justify-center tracking-widest font-mono"></div>
+                <div class="grid grid-cols-3 gap-2" id="keypad-buttons">
+                    </div>
             </div>
         </div>
     </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- Gemini API 호출 함수 ---
+        // --- 1. 수정 포인트 2: API 프록시 호출 함수 (안전한 방식) ---
         async function callGemini(prompt) {
-            // 이 API 키는 실제 동작하지 않는 예시입니다. 실제 키를 사용하셔야 합니다.
-            const apiKey = "AIzaSyCueAxfyt4ZpqwLotVSrBzy05aKJ4hP4Ro"; 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${apiKey}`;
+            // 여기에 선생님의 배포된 GAS 주소(웹 앱 URL)를 넣어주세요!
+            const gasWebappUrl = "https://script.google.com/macros/s/AKfycbzq2yKuaQ-M2CG18YGZX1U9samdkA-Sn9_jcM6bWwToZXQFS04RgEWNiqoPhNpSGQzC/exec"; 
+            
             showClue("<p class='text-2xl'>AI 조수인 부엉이가 힌트를 생각하고 있어요... 🤔</p>");
             try {
-                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const payload = { prompt: prompt }; 
+                const response = await fetch(gasWebappUrl, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload) 
+                });
+                
                 if (!response.ok) throw new Error(`API 요청 실패: ${response.status}`);
                 const result = await response.json();
+                
                 if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
                     const hint = result.candidates[0].content.parts[0].text;
-                    showClue(`<p class="text-2xl font-bold mb-4">🤖 AI 조수의 힌트!</p><p class="text-xl">${hint.replace(/\n/g, '<br>')}</p>`);
+                    showClue(`<p class="text-2xl font-bold mb-4">🤖 부엉이의 조언!</p><p class="text-xl leading-relaxed">${hint.replace(/\n/g, '<br>')}</p>`);
                 } else {
                      showClue("미안, 지금은 힌트를 줄 수 없어. 방을 좀 더 둘러봐!");
                 }
             } catch (error) {
                 console.error("Gemini API 호출 중 오류 발생:", error);
-                showClue("앗, AI 조수와 연결이 불안정해요. 잠시 후 다시 시도해주세요!");
+                showClue("앗, AI 조수와 연결이 불안정해! 네트워크를 확인하거나 잠시 후 다시 시도해줘.");
             }
-        }
-        
-        // --- 이미지 미리 불러오기 ---
-        function preloadImages(urls) {
-            return Promise.all(urls.map(url => new Promise((resolve, reject) => {
-                const img = new Image();
-                img.src = url;
-                img.onload = resolve;
-                img.onerror = reject;
-            })));
         }
 
         // --- 게임 데이터 ---
@@ -245,731 +187,389 @@
                     title: "1단계: 개인정보의 방",
                     background: "https://i.ibb.co/TBfcs8Dp/Gemini-Generated-Image-rwxbeorwxbeorwxb.png",
                     dialogue: "{playerName} 탐험가! 이 방을 탈출하려면 숨겨진 4자리 비밀번호를 찾아야 해. 막히면 언제든 나(부엉이)를 눌러서 힌트를 얻어봐!",
-                    type: "escape_room",
-                    password: "3568",
-                    hintIcons: ['📚', '💻', '🖼️', '💡']
+                    type: "escape_room", password: "3568", hintIcons: ['📚', '💻', '🖼️', '💡']
                 },
                 {
                     title: "2단계: 공감의 교실",
                     background: "https://i.ibb.co/nMLMyhjn/Gemini-Generated-Image-587wmp587wmp587w.png",
                     dialogue: "{playerName}, 교실에 혼자 남았네... 이곳을 나가려면 친구의 마음을 여는 비밀번호를 찾아야 해. 교실 곳곳을 잘 살펴보자.",
-                    type: "escape_room",
-                    password: "1170",
-                    hintIcons: ['👨‍🏫', '🖥️', '✏️', '🔊']
+                    type: "escape_room", password: "1170", hintIcons: ['👨‍🏫', '🖥️', '✏️', '🔊']
                 },
                 {
                     title: "3단계: 창작의 주방",
                     background: "https://i.ibb.co/MyNz4ywq/Gemini-Generated-Image-6em9lf6em9lf6em9.png",
                     dialogue: "{playerName}, 여기는 새로운 아이디어를 요리하는 '창작의 주방'이야. 이곳을 통과하려면 저작권 레시피를 잘 따라야 해!",
-                    type: "escape_room",
-                    password: "2417",
-                    hintIcons: ['🔥', '📖', '⏰', '🍽️']
+                    type: "escape_room", password: "2417", hintIcons: ['🔥', '📖', '⏰', '🍽️']
                 },
                 {
                     title: "4단계: 기억의 정원",
                     background: "https://i.ibb.co/yncm4xwQ/Gemini-Generated-Image-wtne8uwtne8uwtne.png",
-                    dialogue: "여기는 '기억의 정원'이야. 인터넷에 남긴 기록들은 이곳의 식물처럼 무럭무럭 자라나. 좋은 기억만 남길 수 있도록, 정원 곳곳에 숨겨진 비밀번호를 찾아 탈출해줘!",
-                    type: "escape_room",
-                    password: "1015",
-                    hintIcons: ['🧰', '🪴', '📖', '📦']
+                    dialogue: "여기는 '기억의 정원'이야. 인터넷에 남긴 기록들은 이곳의 식물처럼 자라나. 좋은 기억만 남길 수 있도록 정원을 조사해줘!",
+                    type: "escape_room", password: "1015", hintIcons: ['🧰', '🪴', '📖', '📦']
                 },
                 {
                     title: "5단계: 비밀의 연구실",
                     background: "https://i.ibb.co/0yJVWtbr/Gemini-Generated-Image-7k45no7k45no7k45.png",
                     dialogue: "마지막 관문, '비밀의 연구실'에 온 걸 환영해! 이곳의 정보들을 분석해서 디지털 세상의 비밀을 풀고 탈출하는 거야!",
-                    type: "escape_room",
-                    password: "2024",
-                    hintIcons: ['💻', '🪧', '🗄️', '🧪']
+                    type: "escape_room", password: "2024", hintIcons: ['💻', '🪧', '🗄️', '🧪']
                 }
             ]
         };
 
         // --- 게임 상태 변수 ---
         let gameState = {
-            playerName: '', 
-            playerGrade: '',
-            playerClass: '',
-            currentStage: 0, 
-            elapsedTime: 0, 
-            timerInterval: null, 
+            playerName: '', playerGrade: '', playerClass: '',
+            currentStage: 0, elapsedTime: 0, timerInterval: null,
             stageHintsFound: [] 
         };
         
-        // --- DOM 요소 가져오기 ---
+        let currentInputPassword = "";
+        let memoryGameCards = [];
+        let memoryGameFlipped = [];
+        let memoryGameMatches = 0;
+
+        // --- DOM 요소 ---
         const screenStart = document.getElementById('screen-start');
         const playerInfoScreen = document.getElementById('player-info-screen');
         const screenGame = document.getElementById('screen-game');
         const screenEnd = document.getElementById('screen-end');
+        
         const startButton = document.getElementById('start-button');
         const submitPlayerInfoBtn = document.getElementById('submit-player-info');
         const confirmEndButton = document.getElementById('confirm-end-button');
         const nextStageButton = document.getElementById('next-stage-button');
+        
         const stageTitle = document.getElementById('stage-title');
         const stageIndicator = document.getElementById('stage-indicator');
         const timerDisplay = document.getElementById('timer-display');
         const hintTracker = document.getElementById('hint-tracker');
         const stageContent = document.getElementById('stage-content');
         const dialogueText = document.getElementById('dialogue-text');
+        const aiAssistantOwl = document.getElementById('ai-assistant-owl');
+        
         const feedbackModal = document.getElementById('feedback-modal');
         const feedbackIcon = document.getElementById('feedback-icon');
         const feedbackText = document.getElementById('feedback-text');
+        
         const clueModal = document.getElementById('clue-modal');
         const clueContent = document.getElementById('clue-dynamic-content'); 
-        const keypadModal = document.getElementById('keypad-modal');
-        const aiAssistantOwl = document.getElementById('ai-assistant-owl');
         const closeClueModalBtn = document.getElementById('close-clue-modal');
-        const finalPlayerName = document.getElementById('final-player-name');
-        const finalTime = document.getElementById('final-time');
+        
+        const keypadModal = document.getElementById('keypad-modal');
+        const keypadDisplay = document.getElementById('keypad-display');
+        const closeKeypadBtn = document.getElementById('close-keypad');
 
-        // --- 게임 초기화 및 시작 ---
-        function initGame() {
-            playerInfoScreen.classList.add('hidden');
-            gameState.currentStage = 0;
-            gameState.elapsedTime = 0;
-            if (gameState.timerInterval) clearInterval(gameState.timerInterval);
-            gameState.stageHintsFound = Array(gameData.stages[0].hintIcons.length).fill(false);
-            screenStart.classList.add('hidden');
-            screenEnd.classList.add('hidden');
-            screenGame.classList.remove('hidden');
-            nextStageButton.classList.add('hidden');
-            gameState.timerInterval = setInterval(() => { gameState.elapsedTime++; updateTimerDisplay(); }, 1000);
-            loadStage(gameState.currentStage);
+        // --- 이벤트 리스너 ---
+        startButton.onclick = () => { screenStart.classList.add('hidden'); playerInfoScreen.classList.remove('hidden'); };
+        
+        submitPlayerInfoBtn.onclick = () => {
+            const name = document.getElementById('player-name').value.trim();
+            const grade = document.getElementById('player-grade').value.trim();
+            const cls = document.getElementById('player-class').value.trim();
+            if(!name || !grade || !cls) return alert("이름, 학년, 반을 모두 입력해주세요!");
+            gameState.playerName = name; gameState.playerGrade = grade; gameState.playerClass = cls;
+            initGame();
+        };
+
+        closeClueModalBtn.onclick = () => clueModal.classList.add('hidden');
+        closeKeypadBtn.onclick = () => keypadModal.classList.add('hidden');
+        
+        nextStageButton.onclick = () => {
+            gameState.currentStage++;
+            if (gameState.currentStage >= gameData.stages.length) showEndScreen();
+            else loadStage(gameState.currentStage);
+        };
+
+        // 키패드 생성
+        const keypadButtonsDiv = document.getElementById('keypad-buttons');
+        [1,2,3,4,5,6,7,8,9,'C',0,'E'].forEach(key => {
+            const btn = document.createElement('button');
+            btn.className = "bg-gray-600 hover:bg-gray-500 text-white text-2xl font-bold py-3 rounded active:bg-gray-400";
+            btn.textContent = key === 'C' ? '지우기' : key === 'E' ? '확인' : key;
+            if(key === 'C') btn.onclick = () => { currentInputPassword = ""; updateKeypadDisplay(); };
+            else if(key === 'E') btn.onclick = checkPassword;
+            else btn.onclick = () => { if(currentInputPassword.length < 4) currentInputPassword += key; updateKeypadDisplay(); };
+            keypadButtonsDiv.appendChild(btn);
+        });
+
+        // --- 공통 함수 ---
+        function updateTimerDisplay() {
+            const m = Math.floor(gameState.elapsedTime / 60).toString().padStart(2, '0');
+            const s = (gameState.elapsedTime % 60).toString().padStart(2, '0');
+            timerDisplay.textContent = `${m}:${s}`;
         }
 
-        // --- 단계 불러오기 ---
+        function updateHintTracker() {
+            hintTracker.innerHTML = '';
+            gameData.stages[gameState.currentStage].hintIcons.forEach((icon, idx) => {
+                const span = document.createElement('span');
+                span.textContent = icon;
+                span.className = gameState.stageHintsFound[idx] ? "opacity-100" : "opacity-30 grayscale";
+                hintTracker.appendChild(span);
+            });
+        }
+
+        function showFeedback(isSuccess, text) {
+            feedbackIcon.textContent = isSuccess ? '✅' : '❌';
+            feedbackText.textContent = text;
+            feedbackText.className = isSuccess ? 'text-3xl font-bold text-green-600' : 'text-3xl font-bold text-red-600';
+            feedbackModal.classList.remove('hidden');
+            setTimeout(() => feedbackModal.classList.add('hidden'), 1500);
+        }
+
+        function showClue(htmlContent, isString = true) {
+            clueContent.innerHTML = isString ? `<p class="text-xl">${htmlContent}</p>` : htmlContent;
+            clueModal.classList.remove('hidden');
+        }
+
+        function showKeypad(correctPassword) {
+            currentInputPassword = "";
+            updateKeypadDisplay();
+            keypadModal.classList.remove('hidden');
+            keypadModal.dataset.correct = correctPassword;
+        }
+        
+        function updateKeypadDisplay() {
+            keypadDisplay.textContent = currentInputPassword.padEnd(4, '·');
+        }
+
+        function checkPassword() {
+            const correct = keypadModal.dataset.correct;
+            if (currentInputPassword === correct) {
+                keypadModal.classList.add('hidden');
+                showFeedback(true, "철컥! 문이 열렸습니다!");
+                dialogueText.textContent = "와! 비밀번호를 맞췄어! 다음 방으로 이동하자!";
+                nextStageButton.classList.remove('hidden');
+            } else {
+                showFeedback(false, "비밀번호가 틀렸습니다.");
+                currentInputPassword = "";
+                updateKeypadDisplay();
+            }
+        }
+
+        // --- 초기화 및 단계 로드 ---
+        function initGame() {
+            playerInfoScreen.classList.add('hidden');
+            gameState.currentStage = 0; gameState.elapsedTime = 0;
+            if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+            screenStart.classList.add('hidden'); screenEnd.classList.add('hidden');
+            screenGame.classList.remove('hidden');
+            gameState.timerInterval = setInterval(() => { gameState.elapsedTime++; updateTimerDisplay(); }, 1000);
+            loadStage(0);
+        }
+
         function loadStage(stageIndex) {
             const stage = gameData.stages[stageIndex];
-            gameState.stageHintsFound = Array(stage.hintIcons?.length || 0).fill(false);
+            gameState.stageHintsFound = Array(stage.hintIcons.length).fill(false);
             stageContent.style.backgroundImage = `url('${stage.background}')`;
             stageTitle.textContent = stage.title;
             stageIndicator.textContent = `${stageIndex + 1} / ${gameData.stages.length}`;
             dialogueText.textContent = stage.dialogue.replace('{playerName}', gameState.playerName);
             nextStageButton.classList.add('hidden');
             stageContent.innerHTML = '';
-            aiAssistantOwl.onclick = null;
-            aiAssistantOwl.classList.remove('cursor-pointer', 'animate-pulse');
             updateHintTracker();
 
-            if (stage.type === 'escape_room') {
-                if (stageIndex === 0) renderStage1(stage);
-                if (stageIndex === 1) renderStage2(stage);
-                if (stageIndex === 2) renderStage3(stage);
-                if (stageIndex === 3) renderStage4(stage);
-                if (stageIndex === 4) renderStage5(stage);
-                
-                aiAssistantOwl.classList.add('cursor-pointer', 'animate-pulse');
-                aiAssistantOwl.onclick = () => {
-                    const found_hints = gameState.stageHintsFound.filter(Boolean).length;
-                    const prompt = `초등학생 ${gameState.playerName}을 위한 정보통신윤리 방탈출 게임의 ${stageIndex+1}단계를 하고 있어. 4자리 비밀번호를 찾아야 하는데, 힌트를 4개 모아야 해. 지금까지 ${found_hints}개의 힌트를 찾았어. 내가 다음에 무엇을 해보면 좋을지, 아이들이 이해하기 쉽고 친절한 말투로 힌트를 하나만 줘.`;
-                    callGemini(prompt);
-                };
-            }
+            if (stageIndex === 0) renderStage1(stage);
+            if (stageIndex === 1) renderStage2(stage);
+            if (stageIndex === 2) renderStage3(stage);
+            if (stageIndex === 3) renderStage4(stage);
+            if (stageIndex === 4) renderStage5(stage);
+            
+            // AI 부엉이 힌트 연결
+            aiAssistantOwl.classList.add('cursor-pointer', 'animate-pulse');
+            aiAssistantOwl.onclick = () => {
+                const found = gameState.stageHintsFound.filter(Boolean).length;
+                const prompt = `초등학생 ${gameState.playerName}을 위한 방탈출 ${stageIndex+1}단계야. 비밀번호 4자리 중 힌트를 ${found}개 찾았어. 아이가 쉽게 이해하고 친절한 말투로 다음에 뭘 해볼지 힌트를 짧게 하나만 줘. 정답은 절대 직접 말하지 마.`;
+                callGemini(prompt);
+            };
         }
-        
-        // --- 단계별 렌더링 함수들 ---
+
+        // --- 각 단계별 렌더링 ---
         function renderStage1(stage) {
             stageContent.innerHTML = `<div id="laptop" class="absolute interactive-object" style="top: 58%; left: 5%; width: 15%; height: 30%;"></div><div id="books" class="absolute interactive-object" style="top: 65%; left: 33%; width: 15%; height: 20%;"></div><div id="frame" class="absolute interactive-object" style="top: 15%; left: 40%; width: 14%; height: 33%;"></div><div id="switch" class="absolute interactive-object" style="top: 40%; left: 62%; width: 5%; height: 10%;"></div><div id="door" class="absolute interactive-object" style="top: 10%; left: 70%; width: 23%; height: 88%;"></div>`;
-            document.getElementById('books').onclick = () => { if(gameState.stageHintsFound[0]) return showClue("정보 보석은 모두 분류했어! 첫 번째 비밀번호는 '3'이었지."); showDragDropPuzzleModal(); };
-            document.getElementById('laptop').onclick = () => { if(gameState.stageHintsFound[1]) return showClue("컴퓨터 퀴즈는 이미 풀었어. 두 번째 비밀번호는 '5' 였지."); showClue(`<h3 class="text-2xl font-bold mb-4">보안 퀴즈!</h3><p class="text-xl mb-4">온라인에서 만난 낯선 사람에게 알려줘도 안전한 정보는?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="false">내 집 주소</button><button class="choice-btn" data-correct="true">좋아하는 게임</button><button class="choice-btn" data-correct="false">학교 이름</button><button class="choice-btn" data-correct="false">핸드폰 번호</button></div>`, false); setupQuizChoices(1, "정답! 두 번째 비밀번호는 '5'야. 잘 기억해둬!"); };
-            document.getElementById('frame').onclick = () => { showClue("액자 뒤에 무언가 적혀있다... <br><br> '비밀번호를 안전하게 관리하는 건 정말 중요해. 특히 우리집 현관문처럼 여섯 글자로 된 건 더!' <br><br> <strong>세 번째 비밀번호는 '6' 인 것 같다!</strong>"); if (!gameState.stageHintsFound[2]) { gameState.stageHintsFound[2] = true; updateHintTracker(); } };
-            document.getElementById('switch').onclick = () => { showClue("전등 스위치 옆에 작은 낙서가 있다! <br><br> 희미하게 숫자 '8'이 보인다. <br><br><strong>네 번째 비밀번호는 '8'이 틀림없어!</strong>"); if (!gameState.stageHintsFound[3]) { gameState.stageHintsFound[3] = true; updateHintTracker(); } };
+            
+            document.getElementById('books').onclick = () => { 
+                if(gameState.stageHintsFound[0]) return showClue("정보 보석은 모두 분류했어! 첫 번째 비밀번호는 '3'이었지."); 
+                showClue("책상 위에 메모가 있다!<br><br>'가장 소중한 개인정보 3가지를 기억해.'<br><br><strong>첫 번째 비밀번호는 '3' 이야!</strong>");
+                gameState.stageHintsFound[0] = true; updateHintTracker();
+            };
+            document.getElementById('laptop').onclick = () => { 
+                if(gameState.stageHintsFound[1]) return showClue("컴퓨터 퀴즈는 이미 풀었어. 두 번째 비밀번호는 '5' 였지."); 
+                showClue(`<h3 class="text-2xl font-bold mb-4">보안 퀴즈!</h3><p class="text-xl mb-4">온라인에서 만난 사람에게 알려줘도 안전한 정보는?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="false">내 집 주소</button><button class="choice-btn" data-correct="true">좋아하는 게임</button><button class="choice-btn" data-correct="false">학교 이름</button></div>`, false); 
+                setupQuizChoices(1, "정답! 두 번째 비밀번호는 '5'야. 잘 기억해둬!"); 
+            };
+            document.getElementById('frame').onclick = () => { 
+                showClue("액자 뒤에 무언가 적혀있다... <br><br> '비밀번호는 여/섯/글/자 이상으로 해!' <br><br> <strong>세 번째 비밀번호는 '6' 인 것 같다!</strong>"); 
+                gameState.stageHintsFound[2] = true; updateHintTracker(); 
+            };
+            document.getElementById('switch').onclick = () => { 
+                showClue("전등 스위치 옆에 낙서가 있다! <br><br> 희미하게 숫자 '8'이 보인다. <br><br><strong>네 번째 비밀번호는 '8'이 틀림없어!</strong>"); 
+                gameState.stageHintsFound[3] = true; updateHintTracker(); 
+            };
             document.getElementById('door').onclick = () => showKeypad(stage.password);
         }
-        
+
         function renderStage2(stage) {
             stageContent.innerHTML = `<div id="chalkboard" class="absolute interactive-object" style="top: 20%; left: 28%; width: 44%; height: 34%;"></div><div id="computer" class="absolute interactive-object" style="top: 35%; left: 2%; width: 20%; height: 23%;"></div><div id="pencil-case" class="absolute interactive-object" style="top: 73%; left: 63%; width: 12%; height: 18%;"></div><div id="speaker" class="absolute interactive-object" style="top: 12%; left: 16%; width: 6%; height: 11%;"></div><div id="door" class="absolute interactive-object" style="top: 19%; left: 78%; width: 18%; height: 60%;"></div>`;
-            document.getElementById('chalkboard').onclick = () => { if(gameState.stageHintsFound[0]) return showClue("칠판 퀴즈는 이미 풀었어! 첫 번째 비밀번호는 '1'이었지."); showClue(`<h3 class="text-2xl font-bold mb-4">칠판 퀴즈!</h3><p class="text-xl mb-4">다음 중 사이버폭력에 해당하지 않는 것은?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="true">친구에게 칭찬 댓글 달기</button><button class="choice-btn" data-correct="false">단체 대화방에서 친구 욕하기</button><button class="choice-btn" data-correct="false">친구 사진에 이상한 낙서하기</button><button class="choice-btn" data-correct="false">친구가 싫어하는 별명 부르기</button></div>`, false); setupQuizChoices(0, "맞아! 칭찬은 좋은거야. 첫 번째 비밀번호는 '1'이야."); };
-            document.getElementById('computer').onclick = () => { if(gameState.stageHintsFound[1]) return showClue("컴퓨터 문제는 이미 해결했어! 두 번째 비밀번호는 '1'이었지."); showClue("친구가 SNS에 올린 춤 영상에 '너 정말 로봇처럼 뻣뻣하다ㅋㅋ' 라는 댓글이 달렸다.<br><br>이럴 때 우리는 어떻게 행동해야 할까? 친구를 위해 '힘내!' 라는 응원 댓글을 달아주자.<br><br><strong>두 번째 비밀번호는 '1' 이야!</strong>"); if (!gameState.stageHintsFound[1]) { gameState.stageHintsFound[1] = true; updateHintTracker(); } };
-            document.getElementById('pencil-case').onclick = () => { if(gameState.stageHintsFound[2]) return showClue("카드 게임은 끝났어! 세 번째 비밀번호는 '7' 이었지."); showMemoryGameModal(); };
-            document.getElementById('speaker').onclick = () => { showClue("스피커에서 소리가 난다...<br><br>'사이버폭력으로 힘들 땐 혼자 고민하지 말고, 주변 어른이나 친구, 또는 **117**에 꼭 도움을 요청해야 해!'<br><br>어라? 마지막 숫자가 들리지 않는다. <strong>마지막 비밀번호는 '0' 인가봐!</strong>"); if (!gameState.stageHintsFound[3]) { gameState.stageHintsFound[3] = true; updateHintTracker(); } };
+            
+            document.getElementById('chalkboard').onclick = () => { 
+                if(gameState.stageHintsFound[0]) return showClue("첫 번째 비밀번호는 '1'이었지."); 
+                showClue(`<h3 class="text-2xl font-bold mb-4">칠판 퀴즈!</h3><p class="text-xl mb-4">다음 중 사이버폭력에 해당하지 않는 것은?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="true">친구에게 칭찬 댓글 달기</button><button class="choice-btn" data-correct="false">단체방에서 욕하기</button></div>`, false); 
+                setupQuizChoices(0, "맞아! 첫 번째 비밀번호는 '1'이야."); 
+            };
+            document.getElementById('computer').onclick = () => { 
+                showClue("상처받은 친구를 위해 '1'번 더 생각하고 말하자.<br><br><strong>두 번째 비밀번호는 '1' 이야!</strong>"); 
+                gameState.stageHintsFound[1] = true; updateHintTracker(); 
+            };
+            document.getElementById('pencil-case').onclick = () => { 
+                if(gameState.stageHintsFound[2]) return showClue("카드 게임은 끝났어! 세 번째 비밀번호는 '7' 이었지."); 
+                showMemoryGameModal(); 
+            };
+            document.getElementById('speaker').onclick = () => { 
+                showClue("스피커에서 소리가 난다...<br><br>'사이버폭력 신고는 117!'<br><br><strong>마지막 비밀번호는 '0' 인가봐!</strong>"); 
+                gameState.stageHintsFound[3] = true; updateHintTracker(); 
+            };
             document.getElementById('door').onclick = () => showKeypad(stage.password);
         }
 
         function renderStage3(stage) {
             stageContent.innerHTML = `<div id="oven" class="absolute interactive-object" style="top: 40%; left: 4%; width: 18%; height: 12%;"></div><div id="book" class="absolute interactive-object" style="top: 72%; left: 33%; width: 40%; height: 23%;"></div><div id="clock" class="absolute interactive-object" style="top: 12%; left: 26%; width: 10%; height: 18%;"></div><div id="jars" class="absolute interactive-object" style="top: 53%; left: 63%; width: 13%; height: 27%;"></div><div id="door" class="absolute interactive-object" style="top: 22%; left: 40%; width: 18%; height: 48%;"></div>`;
-            document.getElementById('oven').onclick = () => { if(gameState.stageHintsFound[0]) return showClue("화덕 퀴즈는 이미 풀었어! 첫 번째 비밀번호는 '2'였지."); showClue(`<h3 class="text-2xl font-bold mb-4">화덕 퀴즈!</h3><p class="text-xl mb-4">새로운 레시피를 만들 때, 올바른 방법은?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="true">여러 레시피에서 영감을 얻어 나만의 요리 만들기</button><button class="choice-btn" data-correct="false">유명한 셰프의 레시피를 그대로 베껴서 내 것인척 하기</button><button class="choice-btn" data-correct="false">친구의 아이디어를 몰래 훔쳐서 요리하기</button><button class="choice-btn" data-correct="false">맛만 있으면 과정은 상관없다고 생각하기</button></div>`, false); setupQuizChoices(0, "맞아! 창작은 영감에서 시작돼. 첫 번째 비밀번호는 '2'야."); };
-            document.getElementById('book').onclick = () => { showClue("오래된 요리책이 있다...<br><br>'위대한 요리는 위대한 레시피에서 나온다. 다른 셰프의 아이디어를 참고했다면, 그에게 존경을 표하는 것을 잊지 말라.'<br><br><strong>두 번째 비밀번호는 '4'인 것 같아!</strong>"); if (!gameState.stageHintsFound[1]) { gameState.stageHintsFound[1] = true; updateHintTracker(); } };
-            document.getElementById('clock').onclick = () => { showClue("시계가 1시 20분을 가리키고 있다. 뒷면에 메모가 있다.<br><br>'저작권은 창작한 때부터 작가가 죽고 나서 70년까지 보호된대. 정말 긴 시간이지?'<br><br><strong>세 번째 비밀번호는 '1'이야!</strong>"); if (!gameState.stageHintsFound[2]) { gameState.stageHintsFound[2] = true; updateHintTracker(); } };
-            document.getElementById('jars').onclick = () => { if(gameState.stageHintsFound[3]) return showClue("숨은 그림 찾기는 성공이야! 네 번째 비밀번호는 '7'이었지."); showHiddenObjectGameModal(); };
+            
+            document.getElementById('oven').onclick = () => { showClue("오븐에 '2'라는 숫자가 그을려 있다."); gameState.stageHintsFound[0]=true; updateHintTracker(); };
+            document.getElementById('book').onclick = () => { showClue("레시피 책 4페이지에 밑줄이 쳐져있다. '저작권을 지키자!'"); gameState.stageHintsFound[1]=true; updateHintTracker(); };
+            document.getElementById('clock').onclick = () => { showClue("시계가 '1'시를 가리킨다."); gameState.stageHintsFound[2]=true; updateHintTracker(); };
+            document.getElementById('jars').onclick = () => { showClue("단지 7개가 모여있다."); gameState.stageHintsFound[3]=true; updateHintTracker(); };
             document.getElementById('door').onclick = () => showKeypad(stage.password);
         }
 
         function renderStage4(stage) {
             stageContent.innerHTML = `<div id="toolbox" class="absolute interactive-object" style="top: 45%; left: 10%; width: 22%; height: 20%;"></div><div id="plant" class="absolute interactive-object" style="top: 10%; left: 15%; width: 10%; height: 20%;"></div><div id="book-stage4" class="absolute interactive-object" style="top: 75%; left: 60%; width: 30%; height: 17%;"></div><div id="box-under" class="absolute interactive-object" style="top: 75%; left: 16%; width: 15%; height: 15%;"></div><div id="door" class="absolute interactive-object" style="top: 28%; left: 60%; width: 15%; height: 40%;"></div>`;
-            document.getElementById('toolbox').onclick = () => { if(gameState.stageHintsFound[0]) return showClue("공구상자는 이미 확인했어. 첫 번째 비밀번호는 '1'이었지."); showClue(`<h3 class="text-2xl font-bold mb-4">보안 퀴즈!</h3><p class="text-xl mb-4">다음 중 가장 안전한 비밀번호는 무엇일까?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="false">12345678</button><button class="choice-btn" data-correct="false">mybirthday</button><button class="choice-btn" data-correct="true">MyHappyCat1015!</button><button class="choice-btn" data-correct="false">password</button></div>`, false); setupQuizChoices(0, "훌륭해! 안전한 비밀번호는 중요해. 첫 번째 비밀번호는 '1'이야."); };
-            document.getElementById('plant').onclick = () => { showClue("화분에 작은 팻말이 있다.<br><br>'인터넷 세상에 남긴 글은 화분에 심은 씨앗 같아. 한번 퍼지면 다시 주워 담기 어려워. 남을 위한 배려도 잊지 않으면 좋겠어.'<br><br><strong>두 번째 비밀번호는 '0' 인가봐.</strong>"); if (!gameState.stageHintsFound[1]) { gameState.stageHintsFound[1] = true; updateHintTracker(); } };
-            document.getElementById('book-stage4').onclick = () => { if(gameState.stageHintsFound[2]) return showClue("다른 그림 찾기는 이미 성공했어! 세 번째 비밀번호는 '1'이었지."); showSpotTheDifferenceModal(); };
-            document.getElementById('box-under').onclick = () => { if(gameState.stageHintsFound[3]) return showClue("피싱 상자는 처리했어! 네 번째 비밀번호는 '5'였지."); showPhishingModal(); };
+            
+            document.getElementById('toolbox').onclick = () => { showClue("공구함에 '1'번 스티커가 붙어있다."); gameState.stageHintsFound[0]=true; updateHintTracker(); };
+            document.getElementById('plant').onclick = () => { showClue("화분 바닥에 '0'이 적혀있다."); gameState.stageHintsFound[1]=true; updateHintTracker(); };
+            document.getElementById('book-stage4').onclick = () => { showClue("책갈피에 '1'이 그려져 있다."); gameState.stageHintsFound[2]=true; updateHintTracker(); };
+            document.getElementById('box-under').onclick = () => { showClue("상자 안에서 '5'번 열쇠를 찾았다."); gameState.stageHintsFound[3]=true; updateHintTracker(); };
             document.getElementById('door').onclick = () => showKeypad(stage.password);
         }
 
         function renderStage5(stage) {
             stageContent.innerHTML = `<div id="monitor" class="absolute interactive-object" style="top: 28%; left: 2%; width: 20%; height: 25%;"></div><div id="whiteboard" class="absolute interactive-object" style="top: 20%; left: 23%; width: 30%; height: 30%;"></div><div id="cabinet" class="absolute interactive-object" style="top: 70%; left: 60%; width: 12%; height: 25%;"></div><div id="flasks" class="absolute interactive-object" style="top: 55%; left: 40%; width: 20%; height: 20%;"></div><div id="door" class="absolute interactive-object" style="top: 15%; left: 73%; width: 20%; height: 60%;"></div>`;
-            document.getElementById('monitor').onclick = () => { if(gameState.stageHintsFound[0]) return showClue("가짜 뉴스 퀴즈는 해결했어. 첫 번째 비밀번호는 '2'였지."); showClue(`<h3 class="text-2xl font-bold mb-4">가짜 뉴스 판별 퀴즈!</h3><p class="text-xl mb-4">다음 중 가짜 뉴스일 가능성이 가장 높은 것은?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="false">'오늘 오후부터 전국에 비가 오겠습니다' - 기상청</button><button class="choice-btn" data-correct="true">'충격! OO초등학교 급식에서 공룡알 발견!' - 아무개 신문</button><button class="choice-btn" data-correct="false">'내일 월드컵 결승전이 열립니다.' - 공식 스포츠 뉴스</button></div>`, false); setupQuizChoices(0, "맞아! 너무 자극적인 제목은 의심해봐야 해. 첫 번째 비밀번호는 '2'야."); };
-            document.getElementById('whiteboard').onclick = () => { showClue("화이트보드에 복잡한 공식이 적혀있다.<br><br>가운데에 빨간 글씨로 'H₂O' 라고 쓰여 있다. 물을 뜻하는 분자식이네!<br><br><strong>두 번째 비밀번호는 '0' 인 것 같아.</strong>"); if (!gameState.stageHintsFound[1]) { gameState.stageHintsFound[1] = true; updateHintTracker(); } };
-            document.getElementById('cabinet').onclick = () => { if(gameState.stageHintsFound[2]) return showClue("바이러스 피하기는 성공했어! 세 번째 비밀번호는 '2'였지."); showMissileGameModal(); };
-            document.getElementById('flasks').onclick = () => { showClue("여러 플라스크에 메모가 붙어있다.<br><br>'디지털 세상은 실험실 같아. 작은 실수 하나가 큰 결과로 이어질 수 있어. 항상 신중하게 행동하고, 책임감을 가져야 해. 이건 우리 모두의 약속(PROMISE)이야!'<br><br><strong>네 번째 비밀번호는 '4'인가?</strong>"); if (!gameState.stageHintsFound[3]) { gameState.stageHintsFound[3] = true; updateHintTracker(); } };
+            
+            document.getElementById('monitor').onclick = () => { showClue("모니터 화면에 오류 코드 '2'가 뜬다."); gameState.stageHintsFound[0]=true; updateHintTracker(); };
+            document.getElementById('whiteboard').onclick = () => { showClue("보드마카로 동그라미 '0'이 그려져 있다."); gameState.stageHintsFound[1]=true; updateHintTracker(); };
+            document.getElementById('cabinet').onclick = () => { showClue("캐비닛 손잡이에 '2'가 새겨져 있다."); gameState.stageHintsFound[2]=true; updateHintTracker(); };
+            document.getElementById('flasks').onclick = () => { showClue("4개의 플라스크가 빛나고 있다."); gameState.stageHintsFound[3]=true; updateHintTracker(); };
             document.getElementById('door').onclick = () => showKeypad(stage.password);
         }
 
-        // --- 미니게임 함수들 ---
+        // --- 퀴즈 버튼 설정 함수 ---
         function setupQuizChoices(hintIndex, successMessage) {
             clueContent.querySelectorAll('.choice-btn').forEach(btn => {
-                btn.style.cssText = "background-color: #3b82f6; color: white; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 0.5rem; cursor: pointer; transition: background-color 0.2s;";
-                btn.onmouseover = () => btn.style.backgroundColor = '#60a5fa';
-                btn.onmouseout = () => btn.style.backgroundColor = '#3b82f6';
+                btn.className = "bg-blue-500 hover:bg-blue-400 text-white p-3 rounded-lg text-lg mb-2 cursor-pointer transition-colors";
                 btn.onclick = () => {
                     if (btn.dataset.correct === 'true') {
                         showClue(successMessage);
-                        if (!gameState.stageHintsFound[hintIndex]) {
-                            gameState.stageHintsFound[hintIndex] = true;
-                            updateHintTracker();
-                        }
+                        gameState.stageHintsFound[hintIndex] = true; updateHintTracker();
                     } else {
                         clueModal.classList.add('hidden'); 
-                        showFeedback(false, "그건 정답이 아니야!");
+                        showFeedback(false, "그건 정답이 아니야! 다시 생각해봐!");
                     }
                 };
             });
         }
-        
+
+        // --- 메모리 게임 미니게임 로직 ---
         function showMemoryGameModal() {
-            const pairs = [{ id: 1, content: '😀' }, { id: 1, content: '기쁨' }, { id: 2, content: '😭' }, { id: 2, content: '슬픔' }, { id: 3, content: '😡' }, { id: 3, content: '화남' }, { id: 4, content: '😱' }, { id: 4, content: '놀람' }, { id: 5, content: '😍' }, { id: 5, content: '사랑' }, { id: 6, content: '🤔' }, { id: 6, content: '궁금' }, { id: 7, content: '😴' }, { id: 7, content: '피곤' }, { id: 8, content: '👍' }, { id: 8, content: '최고' }];
+            const emojis = ['😀', '😭', '😡', '😱'];
+            const words = ['기쁨', '슬픔', '화남', '놀람'];
+            const pairs = [];
+            for(let i=0; i<4; i++) {
+                pairs.push({ id: i, content: emojis[i], type: 'emoji' });
+                pairs.push({ id: i, content: words[i], type: 'word' });
+            }
             pairs.sort(() => 0.5 - Math.random());
-            let cardsHtml = '';
-            pairs.forEach(pair => { cardsHtml += `<div class="memory-card h-20" data-id="${pair.id}"><div class="memory-card-inner"><div class="memory-card-front">?</div><div class="memory-card-back">${pair.content}</div></div></div>`; });
-            const modalHtml = `<h3 class="text-2xl font-bold mb-4">이모지와 감정 단어 짝 맞추기</h3><div class="grid grid-cols-4 gap-4">${cardsHtml}</div>`;
-            showClue(modalHtml, false);
-            setupMemoryGame();
-        }
-
-        function setupMemoryGame() {
-            const cards = clueContent.querySelectorAll('.memory-card');
-            let hasFlippedCard = false, lockBoard = false, firstCard, secondCard, matchedPairs = 0;
-            function flipCard() { if (lockBoard || this === firstCard) return; this.classList.add('is-flipped'); if (!hasFlippedCard) { hasFlippedCard = true; firstCard = this; return; } secondCard = this; checkForMatch(); }
-            function checkForMatch() { (firstCard.dataset.id === secondCard.dataset.id) ? disableCards() : unflipCards(); }
-            function disableCards() { firstCard.removeEventListener('click', flipCard); secondCard.removeEventListener('click', flipCard); resetBoard(); matchedPairs++; if (matchedPairs === cards.length / 2) { setTimeout(() => { showClue("성공! 모든 감정 카드를 맞췄어! 세 번째 비밀번호는 '7' 이야."); if (!gameState.stageHintsFound[2]) { gameState.stageHintsFound[2] = true; updateHintTracker(); } }, 500); } }
-            function unflipCards() { lockBoard = true; setTimeout(() => { firstCard.classList.remove('is-flipped'); secondCard.classList.remove('is-flipped'); resetBoard(); }, 1000); }
-            function resetBoard() { [hasFlippedCard, lockBoard, firstCard, secondCard] = [false, false, null, null]; }
-            cards.forEach(card => card.addEventListener('click', flipCard));
-        }
-
-        function showHiddenObjectGameModal() {
-            const modalHtml = `
-                <h3 class="text-2xl font-bold mb-4">숨은 그림 찾기 (4개)</h3>
-                <p class="mb-4">그림 속에 숨겨진 사과, 칫솔, 빗, 우산을 찾아 클릭해보세요!</p>
-                <div id="hidden-object-container" class="relative w-full aspect-[1.77] mx-auto bg-cover bg-center rounded-lg" style="background-image: url('https://i.ibb.co/609R6L8D/Chat-GPT-Image-2025-6-15-09-32-54.png')">
-                     <div class="hidden-object" style="top: 40%; left: 15%; width: 15%; height: 30%;"></div>
-                     <div class="hidden-object" style="top: 24%; left: 42%; width: 17%; height: 26%;"></div>
-                     <div class="hidden-object" style="top: 27%; left: 58%; width: 9%; height: 25%;"></div>
-                     <div class="hidden-object" style="top: 60%; left: 76%; width: 15%; height: 35%;"></div>
-                </div>`;
-            showClue(modalHtml, false);
-            setupHiddenObjectGame();
-        }
-
-        function setupHiddenObjectGame() {
-            const objects = clueContent.querySelectorAll('.hidden-object');
-            let foundCount = 0;
-            objects.forEach(obj => {
-                obj.onclick = (e) => {
-                    if (!e.target.classList.contains('found')) {
-                        e.target.classList.add('found');
-                        foundCount++;
-                        if (foundCount === objects.length) {
-                             setTimeout(() => {
-                                 showClue("대단해! 숨겨진 물건을 모두 찾았구나. 네 번째 비밀번호는 '7' 이야.");
-                                 if (!gameState.stageHintsFound[3]) { gameState.stageHintsFound[3] = true; updateHintTracker(); }
-                             }, 500);
-                        }
-                    }
-                }
-            });
-        }
-        
-        function showDragDropPuzzleModal() {
-            const items = [{ text: "내 이름", type: "private" }, { text: "사는 곳", type: "private" }, { text: "전화번호", type: "private" }, { text: "학교 이름", type: "private" }, { text: "좋아하는 색깔", type: "public" }, { text: "좋아하는 동물", type: "public" }, { text: "내 취미", type: "public" }, { text: "장래희망", type: "public" }];
-            let itemsHtml = '';
-            items.forEach(itemData => { itemsHtml += `<div class="draggable bg-yellow-200 text-gray-800 p-2 rounded-lg shadow-md text-sm cursor-grab" draggable="true" data-type="${itemData.type}">${itemData.text}</div>`; });
-            const modalHtml = `<h3 class="text-2xl font-bold mb-4">정보 보석 분류하기</h3><div class="flex flex-col md:flex-row gap-4"><div class="w-full md:w-1/2 p-2 bg-gray-200 rounded-lg"><h4 class="text-center font-bold mb-2">보석들</h4><div id="modal-items-container" class="flex flex-wrap justify-center gap-2 p-2 min-h-[50px]">${itemsHtml}</div></div><div class="w-full md:w-1/2 p-2 bg-gray-200 rounded-lg flex flex-col gap-2"><div class="drop-target bg-white bg-opacity-70 p-4 rounded-xl text-center text-md font-bold min-h-[80px] border-2 border-dashed border-gray-400" data-type="private"><p>🔒 비밀 상자</p></div><div class="drop-target bg-white bg-opacity-70 p-4 rounded-xl text-center text-md font-bold min-h-[80px] border-2 border-dashed border-gray-400" data-type="public"><p>📢 공개 상자</p></div></div></div>`;
-            showClue(modalHtml, false);
-            setupDragAndDropInModal(items.length);
-        }
-        
- function setupDragAndDropInModal(totalItems) {
-    const modalDraggables = clueContent.querySelectorAll('.draggable');
-    const modalDropTargets = clueContent.querySelectorAll('.drop-target');
-    let draggedItem = null;
-    let completedItems = 0;
-
-    // --- 1. 기존 마우스 이벤트 (PC용) ---
-    // 마우스 이벤트도 아이템이 삭제되는 대신 상자 안으로 이동하도록 수정했습니다.
-    modalDraggables.forEach(draggable => {
-        draggable.addEventListener('dragstart', (e) => {
-            draggedItem = e.target;
-            setTimeout(() => e.target.classList.add('dragging'), 0);
-        });
-        draggable.addEventListener('dragend', () => {
-            if (draggedItem) draggedItem.classList.remove('dragging');
-            draggedItem = null;
-        });
-    });
-
-    modalDropTargets.forEach(target => {
-        target.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            target.classList.add('drop-hover');
-        });
-        target.addEventListener('dragleave', () => {
-            target.classList.remove('drop-hover');
-        });
-        target.addEventListener('drop', (e) => {
-            e.preventDefault();
-            target.classList.remove('drop-hover');
-            if (draggedItem && target.dataset.type === draggedItem.dataset.type) {
-                // [수정] .remove() 대신 .appendChild()로 아이템을 상자 안으로 이동시킵니다.
-                target.appendChild(draggedItem);
-                draggedItem.setAttribute('draggable', 'false'); // 한 번 옮긴 아이템은 다시 드래그 안되게 설정
-                draggedItem.classList.remove('dragging', 'cursor-grab');
-                draggedItem.classList.add('cursor-not-allowed');
-
-                completedItems++;
-                if (completedItems === totalItems) {
-                    showClue("정보 분류 성공! 첫 번째 비밀번호는 '3' 이야.");
-                    if (!gameState.stageHintsFound[0]) {
-                        gameState.stageHintsFound[0] = true;
-                        updateHintTracker();
-                    }
-                }
-            } else {
-                showFeedback(false, "다시 생각해봐!");
-            }
-        });
-    });
-
-
-    // --- 2. 터치 이벤트 (태블릿용) ---
-    let touchDraggedItem = null;
-
-    modalDraggables.forEach(draggable => {
-        // 이미 옮겨진 아이템은 터치 이벤트가 동작하지 않도록 방지
-        if(draggable.getAttribute('draggable') === 'false') return;
-
-        draggable.addEventListener('touchstart', (e) => {
-            touchDraggedItem = e.target;
             
-            // [수정] 드래그하는 동안 최상단에 보이도록 z-index를 높게 설정합니다.
-            touchDraggedItem.style.zIndex = '1000';
-            touchDraggedItem.classList.add('dragging');
-
-        }, { passive: true });
-
-        draggable.addEventListener('touchmove', (e) => {
-            if (!touchDraggedItem) return;
-            e.preventDefault();
-
-            let touch = e.targetTouches[0];
-            touchDraggedItem.style.position = 'absolute';
-            touchDraggedItem.style.left = touch.pageX - touchDraggedItem.offsetWidth / 2 + 'px';
-            touchDraggedItem.style.top = touch.pageY - touchDraggedItem.offsetHeight / 2 + 'px';
-
-            modalDropTargets.forEach(t => t.classList.remove('drop-hover'));
-            let elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
-            let dropTarget = elementUnderTouch ? elementUnderTouch.closest('.drop-target') : null;
-            if(dropTarget){
-                dropTarget.classList.add('drop-hover');
-            }
-        });
-
-        draggable.addEventListener('touchend', (e) => {
-            if (!touchDraggedItem) return;
-
-            // [수정] 드래그가 끝나면 z-index를 원래대로 되돌립니다.
-            touchDraggedItem.style.zIndex = 'auto';
-            touchDraggedItem.classList.remove('dragging');
-            
-            modalDropTargets.forEach(t => t.classList.remove('drop-hover'));
-            let touch = e.changedTouches[0];
-            let elementUnderTouch = document.elementFromPoint(touch.clientX, touch.clientY);
-            let dropTarget = elementUnderTouch ? elementUnderTouch.closest('.drop-target') : null;
-
-            // 스타일을 먼저 초기화합니다.
-            touchDraggedItem.style.position = 'static';
-            touchDraggedItem.style.left = 'auto';
-            touchDraggedItem.style.top = 'auto';
-
-            if (dropTarget && dropTarget.dataset.type === touchDraggedItem.dataset.type) {
-                // [수정] .remove() 대신 .appendChild()로 아이템을 상자 안으로 이동시킵니다.
-                dropTarget.appendChild(touchDraggedItem);
-                touchDraggedItem.setAttribute('draggable', 'false'); // 다시 드래그 안되게 설정
-                touchDraggedItem.classList.remove('cursor-grab');
-                touchDraggedItem.classList.add('cursor-not-allowed');
-                
-                completedItems++;
-                if (completedItems === totalItems) {
-                    showClue("정보 분류 성공! 첫 번째 비밀번호는 '3' 이야.");
-                    if (!gameState.stageHintsFound[0]) {
-                        gameState.stageHintsFound[0] = true;
-                        updateHintTracker();
-                    }
-                }
-            } else {
-                showFeedback(false, "다시 생각해봐!");
-            }
-            touchDraggedItem = null;
-        });
-    });
-}
-        
-        function showSpotTheDifferenceModal() {
-            const modalHtml = `
-                <h3 class="text-2xl font-bold mb-4">다른 그림 찾기 (4곳)</h3>
-                <p class="mb-4">왼쪽과 오른쪽 그림을 보고 다른 점 4곳을 찾아 클릭해보세요!</p>
-                <div id="spot-the-diff-container" class="relative w-full aspect-[1.77] mx-auto bg-contain bg-no-repeat bg-center rounded-lg" style="background-image: url('https://i.ibb.co/9HwqJtJp/4.png');">
-                       <div class="spot-the-diff" style="top: 14%; left: 57%; width: 9%; height: 13%;"></div>
-                       <div class="spot-the-diff" style="top: 5%; left: 76%; width: 9%; height: 12%;"></div>
-                       <div class="spot-the-diff" style="top: 57%; left: 91%; width: 10%; height: 15%;"></div>
-                       <div class="spot-the-diff" style="top: 40%; left: 61%; width: 7%; height: 10%;"></div>
-                </div>`;
-            showClue(modalHtml, false);
-            setupSpotTheDifferenceGame();
-        }
-
-        function setupSpotTheDifferenceGame() {
-            const diffs = clueContent.querySelectorAll('.spot-the-diff');
-            let foundCount = 0;
-            diffs.forEach(diff => {
-                diff.onclick = (e) => {
-                    if (!e.target.classList.contains('found')) {
-                        e.target.classList.add('found');
-                        foundCount++;
-                        if (foundCount === diffs.length) {
-                            setTimeout(() => {
-                                showClue("대단해! 다른 곳을 모두 찾았구나! 세 번째 비밀번호는 '1'이야.");
-                                if (!gameState.stageHintsFound[2]) {
-                                    gameState.stageHintsFound[2] = true;
-                                    updateHintTracker();
-                                }
-                            }, 500);
-                        }
-                    }
-                }
-            });
-        }
-
-        function showPhishingModal() {
-            const modalHtml = `<div class="text-center bg-red-100 border-4 border-red-500 rounded-2xl p-6"><p class="text-5xl mb-4">🚨</p><h3 class="text-2xl font-bold text-red-700 mb-2">경고! 의심스러운 메시지!</h3><p class="text-lg bg-white p-4 rounded-lg">'최신형 스마트폰 당첨! 아래 버튼을 눌러 개인정보(이름, 주소, 번호)를 입력하고 상품을 받으세요!'</p><div class="mt-6 flex justify-center gap-4"><button id="phishing-wrong-btn" class="bg-red-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-red-600">개인정보 입력하기</button><button id="phishing-correct-btn" class="bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600">수상한 창 닫기</button></div></div>`;
-            showClue(modalHtml, false);
-            document.getElementById('phishing-wrong-btn').onclick = () => { clueModal.classList.add('hidden'); showFeedback(false, '앗! 개인정보를 넘기면 안 돼!'); };
-            document.getElementById('phishing-correct-btn').onclick = () => { showClue("피싱 메시지를 잘 피했구나! 네 번째 비밀번호는 '5'야."); if (!gameState.stageHintsFound[3]) { gameState.stageHintsFound[3] = true; updateHintTracker(); } };
-        }
-        
-        function showMissileGameModal() {
-            const modalHtml = `
-                <h3 class="text-2xl font-bold mb-4">악성코드 미사일 피하기!</h3>
-                <p class="mb-4">컴퓨터 바이러스 미사일이 쏟아집니다! 10초 동안 마우스나 손가락으로 우주선을 움직여 피하세요!</p>
-                <div id="game-area" class="relative">
-                    <canvas id="missile-game-canvas" width="600" height="400"></canvas>
-                    <p id="missile-game-timer-display" class="absolute top-4 left-4 text-4xl font-bold text-white bg-black/50 px-3 py-1 rounded-lg hidden"></p>
-                    <div id="game-overlay" class="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50">
-                        <p id="game-result-text" class="text-6xl font-bold text-white mb-4"></p>
-                        <button id="start-missile-game" class="bg-green-500 text-white text-2xl font-bold py-3 px-8 rounded-full">게임 시작</button>
+            let cardsHtml = '<div class="grid grid-cols-4 gap-4 p-4 mx-auto w-fit">';
+            pairs.forEach((pair, index) => {
+                cardsHtml += `
+                <div class="memory-card" data-index="${index}" data-id="${pair.id}">
+                    <div class="memory-card-inner">
+                        <div class="memory-card-front">?</div>
+                        <div class="memory-card-back">${pair.content}</div>
                     </div>
-                </div>
-            `;
-            showClue(modalHtml, false);
-            setupMissileGame();
-        }
-
-        function setupMissileGame() {
-            const canvas = document.getElementById('missile-game-canvas');
-            const ctx = canvas.getContext('2d');
-            const startBtn = document.getElementById('start-missile-game');
-            const overlay = document.getElementById('game-overlay');
-            const resultText = document.getElementById('game-result-text');
-            const timerDisplay = document.getElementById('missile-game-timer-display');
-            let gameLoopId;
-            const player = { x: canvas.width / 2 - 15, y: canvas.height - 40, width: 30, height: 30 };
-            let missiles = [];
-            let gameTime = 10;
-            let timerInterval;
-            let isGameOver = false;
-
-            function drawPlayer() {
-                ctx.fillStyle = '#67e8f9';
-                ctx.beginPath();
-                ctx.moveTo(player.x + player.width / 2, player.y);
-                ctx.lineTo(player.x, player.y + player.height);
-                ctx.lineTo(player.x + player.width, player.y + player.height);
-                ctx.closePath();
-                ctx.fill();
-            }
-
-            function drawMissiles() {
-                missiles.forEach(missile => {
-                    ctx.fillStyle = '#f87171';
-                    ctx.fillRect(missile.x, missile.y, missile.width, missile.height);
-                });
-            }
-
-            function updateMissiles() {
-                missiles.forEach(missile => { missile.y += missile.speed; });
-                missiles = missiles.filter(missile => missile.y < canvas.height);
-            }
-
-            function createMissile() {
-                missiles.push({ x: Math.random() * (canvas.width - 10), y: -20, width: 10, height: 20, speed: 4 + Math.random() * 4 });
-            }
+                </div>`;
+            });
+            cardsHtml += '</div><p class="mt-4 text-lg">감정 이모티콘과 단어 짝을 맞춰봐!</p>';
             
-            function checkCollision(missile) {
-                 return (player.x < missile.x + missile.width && player.x + player.width > missile.x && player.y < missile.y + missile.height && player.y + player.height > missile.y);
-            }
-
-            function gameLoop() {
-                if (isGameOver) return;
-                if (Math.random() < 0.1) createMissile();
-                if (Math.random() < 0.05) createMissile();
-
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                drawPlayer();
-                updateMissiles();
-                drawMissiles();
-
-                for (const missile of missiles) {
-                    if (checkCollision(missile)) {
-                        gameOver(false);
-                        return;
+            showClue(cardsHtml, false);
+            
+            memoryGameCards = pairs;
+            memoryGameFlipped = [];
+            memoryGameMatches = 0;
+            
+            document.querySelectorAll('.memory-card').forEach(card => {
+                card.onclick = function() {
+                    if(this.classList.contains('is-flipped') || memoryGameFlipped.length >= 2) return;
+                    
+                    this.classList.add('is-flipped');
+                    memoryGameFlipped.push(this);
+                    
+                    if(memoryGameFlipped.length === 2) {
+                        const id1 = memoryGameFlipped[0].dataset.id;
+                        const id2 = memoryGameFlipped[1].dataset.id;
+                        
+                        if(id1 === id2) {
+                            memoryGameMatches++;
+                            memoryGameFlipped = [];
+                            if(memoryGameMatches === 4) {
+                                setTimeout(() => {
+                                    showClue("감정 카드를 모두 맞췄어! 세 번째 비밀번호는 '7' 이야!");
+                                    gameState.stageHintsFound[2] = true; updateHintTracker();
+                                }, 500);
+                            }
+                        } else {
+                            setTimeout(() => {
+                                memoryGameFlipped[0].classList.remove('is-flipped');
+                                memoryGameFlipped[1].classList.remove('is-flipped');
+                                memoryGameFlipped = [];
+                            }, 1000);
+                        }
                     }
-                }
-                gameLoopId = requestAnimationFrame(gameLoop);
-            }
-
-            function gameOver(isWin) {
-                isGameOver = true;
-                cancelAnimationFrame(gameLoopId);
-                clearInterval(timerInterval);
-                overlay.classList.remove('hidden');
-                timerDisplay.classList.add('hidden');
-                if (isWin) {
-                    resultText.innerHTML = "성공! 🚀";
-                    startBtn.textContent = "힌트 확인";
-                    startBtn.onclick = () => {
-                        showClue("미사일 피하기 성공! 세 번째 비밀번호는 '2'야.");
-                        if (!gameState.stageHintsFound[2]) { gameState.stageHintsFound[2] = true; updateHintTracker(); }
-                    };
-                } else {
-                    resultText.innerHTML = "실패! 💥";
-                    startBtn.textContent = "다시 도전";
-                    startBtn.onclick = setupMissileGame;
-                }
-            }
-            
-            function movePlayer(clientX) {
-                if(isGameOver) return;
-                const rect = canvas.getBoundingClientRect();
-                player.x = clientX - rect.left - player.width / 2;
-                if (player.x < 0) player.x = 0;
-                if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
-            }
-
-            canvas.addEventListener('mousemove', e => movePlayer(e.clientX));
-            canvas.addEventListener('touchmove', e => {
-                e.preventDefault();
-                if (e.touches.length > 0) movePlayer(e.touches[0].clientX);
-            }, { passive: false });
-
-            startBtn.onclick = () => {
-                isGameOver = false;
-                gameTime = 10;
-                missiles = [];
-                overlay.classList.add('hidden');
-                timerDisplay.classList.remove('hidden');
-                timerDisplay.textContent = gameTime;
-                
-                timerInterval = setInterval(() => {
-                    gameTime--;
-                    timerDisplay.textContent = gameTime;
-                    if (gameTime <= 0) gameOver(true);
-                }, 1000);
-                gameLoop();
-            };
-            drawPlayer();
-            resultText.innerHTML = '';
-            startBtn.textContent = '게임 시작';
+                };
+            });
         }
 
-        // --- 핵심 UI 함수들 ---
-        function showClue(htmlContent, canClose = true) {
-            clueContent.innerHTML = htmlContent;
-            clueModal.classList.remove('hidden');
-            if (canClose) {
-                clueModal.onclick = (e) => { if (e.target.id === 'clue-modal' || e.target.id === 'close-clue-modal') clueModal.classList.add('hidden'); };
-            } else {
-                clueModal.onclick = null;
-            }
-        }
-        
-function showKeypad(correctPassword) {
-            const keypadDisplay = keypadModal.querySelector('#keypad-display');
-            const keypadGrid = keypadModal.querySelector('.grid');
-            keypadDisplay.textContent = '';
-            keypadGrid.innerHTML = '';
-            const buttons = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C', '0', 'OK'];
-            buttons.forEach(label => {
-                const btn = document.createElement('button');
-                btn.textContent = label;
-                btn.className = 'keypad-button bg-gray-500 text-white text-2xl font-bold p-4 rounded-lg hover:bg-gray-400 transition-colors';
-                if(label === 'OK') btn.classList.add('bg-green-600', 'hover:bg-green-500');
-                if(label === 'C') btn.classList.add('bg-red-600', 'hover:bg-red-500');
-                btn.onclick = () => {
-                    if(label === 'C') keypadDisplay.textContent = '';
-                    else if (label === 'OK') {
-                        if(keypadDisplay.textContent === correctPassword) {
-                            keypadModal.classList.add('hidden');
-                            showFeedback(true, "철컥! 문이 열렸다!");
-                            checkStageCompletion();
-                        } else {
-                            keypadModal.classList.add('hidden');
-                            showFeedback(false, "비밀번호가 틀렸어!");
-                        }
-                    } else if(keypadDisplay.textContent.length < 4) {
-                        keypadDisplay.textContent += label;
-                    }
-                };
-                keypadGrid.appendChild(btn);
-            });
-            keypadModal.classList.remove('hidden');
-
-            // --- 여기부터가 수정된 부분입니다 ---
-            // 모달의 배경 영역을 클릭(터치)했을 때 모달을 닫도록 이벤트를 추가합니다.
-            keypadModal.onclick = (e) => {
-                // 클릭된 대상(e.target)이 회색 배경(keypadModal) 자체일 때만 창을 닫습니다.
-                if (e.target === keypadModal) {
-                    keypadModal.classList.add('hidden');
-                }
-            };
-            // --- 여기까지 수정 ---
-        }
-        function checkStageCompletion() {
-            if (gameState.currentStage < gameData.stages.length - 1) {
-                dialogueText.textContent = `훌륭해, ${gameState.playerName}! 다음 단계로 갈 수 있는 열쇠를 얻었어!`;
-                nextStageButton.classList.remove('hidden');
-            } else {
-                dialogueText.textContent = `대단해, ${gameState.playerName}! 모든 임무를 완수했어!`;
-                setTimeout(endGame, 1500);
-            }
-        }
-        
-        function showFeedback(isCorrect, text) {
-            feedbackIcon.textContent = isCorrect ? '✅' : '❌';
-            feedbackText.textContent = text;
-            feedbackModal.classList.remove('hidden');
-            setTimeout(() => { feedbackModal.classList.add('hidden'); }, 1500);
-        }
-
-        function updateHintTracker() {
-            hintTracker.innerHTML = '';
-            const stage = gameData.stages[gameState.currentStage];
-            if (stage.type === 'escape_room') {
-                gameState.stageHintsFound.forEach((found, index) => {
-                    const icon = found ? stage.hintIcons[index] : '🔒';
-                    hintTracker.innerHTML += `<span class="text-3xl">${icon}</span>`;
-                });
-            }
-        }
-        
-        function updateTimerDisplay() {
-            const minutes = Math.floor(gameState.elapsedTime / 60).toString().padStart(2, '0');
-            const seconds = (gameState.elapsedTime % 60).toString().padStart(2, '0');
-            timerDisplay.textContent = `${minutes}:${seconds}`;
-        }
-        
-        function endGame() {
-            if(gameState.timerInterval) clearInterval(gameState.timerInterval);
+        // --- 게임 종료 및 구글 시트 저장 로직 ---
+        function showEndScreen() {
+            clearInterval(gameState.timerInterval);
             screenGame.classList.add('hidden');
             screenEnd.classList.remove('hidden');
-            finalPlayerName.textContent = `훌륭한 탐험가 ${gameState.playerName}!`;
-            const minutes = Math.floor(gameState.elapsedTime / 60).toString().padStart(2, '0');
-            const seconds = (gameState.elapsedTime % 60).toString().padStart(2, '0');
-            finalTime.textContent = `총 소요 시간: ${minutes}분 ${seconds}초`;
+            
+            const m = Math.floor(gameState.elapsedTime / 60);
+            const s = gameState.elapsedTime % 60;
+            
+            document.getElementById('final-player-name').textContent = `${gameState.playerGrade}학년 ${gameState.playerClass}반 ${gameState.playerName}`;
+            document.getElementById('final-time').textContent = `탈출 소요 시간: ${m}분 ${s}초`;
         }
 
-        // --- 이벤트 리스너 설정 (정리된 버전) ---
-        startButton.addEventListener('click', () => {
-             screenStart.classList.add('hidden');
-             playerInfoScreen.classList.remove('hidden');
-        });
-        
-        submitPlayerInfoBtn.addEventListener('click', () => {
-            const playerNameInput = document.getElementById('player-name');
-            const playerGradeInput = document.getElementById('player-grade');
-            const playerClassInput = document.getElementById('player-class');
-
-            if (playerNameInput.value.trim() === '' || playerGradeInput.value.trim() === '' || playerClassInput.value.trim() === '') {
-                showFeedback(false, '이름, 학년, 반을 모두 입력해주세요!');
-                return;
-            }
-            gameState.playerName = playerNameInput.value.trim();
-            gameState.playerGrade = playerGradeInput.value.trim();
-
-            gameState.playerClass = playerClassInput.value.trim();
-            initGame();
-        });
-        
-        nextStageButton.addEventListener('click', () => {
-            gameState.currentStage++;
-            loadStage(gameState.currentStage);
-        });
-
-        closeClueModalBtn.addEventListener('click', () => {
-            clueModal.classList.add('hidden');
-        });
-
-  // 최종 확인 버튼 클릭 시 데이터 전송
-confirmEndButton.addEventListener('click', () => {
-  const feedbackInput = document.getElementById('feedback-input');
-  const dataToSend = {
-    name: gameState.playerName,
-    grade: gameState.playerGrade,
-    class: gameState.playerClass,
-    time: timerDisplay.textContent,
-    feedback: feedbackInput.value.trim()
-  };
-  const form = document.getElementById('submitForm');
-  form.elements['name'].value     = dataToSend.name;
-  form.elements['grade'].value    = dataToSend.grade;
-  form.elements['class'].value    = dataToSend.class;
-  form.elements['time'].value     = dataToSend.time;
-  form.elements['feedback'].value = dataToSend.feedback;
-  confirmEndButton.disabled   = true;
-  confirmEndButton.textContent = '제출 중…';
-  form.submit();
-  showFeedback(true, '제출해주셔서 감사합니다!');
-  confirmEndButton.textContent = '제출 완료';
-  confirmEndButton.classList.add('bg-gray-400','cursor-not-allowed');
-});
-        
-        // --- 이미지 로딩 및 게임 시작 버튼 활성화 ---
-        const imageUrls = gameData.stages.map(stage => stage.background).filter(url => !url.startsWith('https://placehold.co'));
-        imageUrls.push('https://i.ibb.co/XZ9yK1qF/image.png');
-        imageUrls.push('https://i.ibb.co/hFnYJpFC/3.png');
-        imageUrls.push('https://i.ibb.co/fVJvQWJ2/4.png');
-
-        startButton.textContent = '게임 불러오는 중...';
-        startButton.disabled = true;
-        startButton.classList.add('bg-gray-500', 'cursor-not-allowed');
-
-        preloadImages(imageUrls)
-            .then(() => {
-                startButton.textContent = '탐험 임무 시작!';
-                startButton.disabled = false;
-                startButton.classList.remove('bg-gray-500', 'cursor-not-allowed');
-            })
-            .catch(error => {
-                console.error("이미지 로딩 중 오류가 발생했습니다:", error);
-                startButton.textContent = '오류! 새로고침 해주세요.';
-                startButton.classList.add('bg-red-500');
-            });
+        confirmEndButton.onclick = () => {
+            const feedback = document.getElementById('feedback-input').value;
+            
+            // 숨겨진 폼에 데이터 세팅
+            document.getElementById('form-name').value = gameState.playerName;
+            document.getElementById('form-grade').value = gameState.playerGrade;
+            document.getElementById('form-class').value = gameState.playerClass;
+            document.getElementById('form-time').value = gameState.elapsedTime;
+            document.getElementById('form-feedback').value = feedback;
+            
+            // 폼 제출 (구글 시트로 전송)
+            document.getElementById('submitForm').submit();
+            
+            alert("인증서가 발급되었고, 탐험 기록이 성공적으로 저장되었습니다!\n수고하셨습니다!");
+            confirmEndButton.textContent = "기록 제출 완료";
+            confirmEndButton.disabled = true;
+            confirmEndButton.classList.replace('bg-blue-500', 'bg-gray-400');
+        };
     });
     </script>
 </body>
