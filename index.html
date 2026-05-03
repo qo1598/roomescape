@@ -152,33 +152,63 @@
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         // --- 1. 수정 포인트 2: API 프록시 호출 함수 (안전한 방식) ---
-        async function callGemini(prompt) {
-            // 여기에 선생님의 배포된 GAS 주소(웹 앱 URL)를 넣어주세요!
-            const gasWebappUrl = "https://script.google.com/macros/s/AKfycbwXyQA5zffY_uC0yaIIUKu5NAOlOY-4NXRTrWEOKi4Zd0sbiVPeJR9-Vem5_G2U2WGG/exec"; 
-            
-            showClue("<p class='text-2xl'>AI 조수인 부엉이가 힌트를 생각하고 있어요... 🤔</p>");
-            try {
-                const payload = { prompt: prompt }; 
-                const response = await fetch(gasWebappUrl, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payload) 
-                });
-                
-                if (!response.ok) throw new Error(`API 요청 실패: ${response.status}`);
-                const result = await response.json();
-                
-                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
-                    const hint = result.candidates[0].content.parts[0].text;
-                    showClue(`<p class="text-2xl font-bold mb-4">🤖 부엉이의 조언!</p><p class="text-xl leading-relaxed">${hint.replace(/\n/g, '<br>')}</p>`);
-                } else {
-                     showClue("미안, 지금은 힌트를 줄 수 없어. 방을 좀 더 둘러봐!");
-                }
-            } catch (error) {
-                console.error("Gemini API 호출 중 오류 발생:", error);
-                showClue("앗, AI 조수와 연결이 불안정해! 네트워크를 확인하거나 잠시 후 다시 시도해줘.");
+async function callGemini(prompt) {
+    const gasWebappUrl = "https://script.google.com/macros/s/본인의_새_GAS_URL/exec"; 
+    
+    showClue("<p class='text-2xl'>AI 조수인 부엉이가 힌트를 생각하고 있어요... 🤔</p>");
+
+    try {
+        const payload = { prompt: prompt };
+
+        const response = await fetch(gasWebappUrl, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload) 
+        });
+
+        const result = await response.json();
+
+        console.log("GAS 응답:", result);
+
+        if (!result.ok) {
+            console.error("GAS/Gemini 오류:", result);
+
+            let message = "앗, AI 조수와 연결이 불안정해요.";
+
+            if (result.error === 'missing_api_key') {
+                message = "GAS에 Gemini API 키가 설정되어 있지 않아요.";
+            } else if (result.error === 'gemini_api_error') {
+                message = "Gemini API 호출에 실패했어요. API 키, 모델명, 사용량 제한을 확인해 주세요.";
+            } else if (result.error === 'missing_prompt') {
+                message = "AI에게 보낼 힌트 요청이 비어 있어요.";
             }
+
+            showClue(message);
+            return;
         }
+
+        const hint = escapeHTML(result.text || "방을 한 번 더 둘러봐!");
+
+        showClue(
+            `<p class="text-2xl font-bold mb-4">🤖 부엉이의 조언!</p>
+             <p class="text-xl leading-relaxed">${hint.replace(/\n/g, '<br>')}</p>`,
+             false
+        );
+
+    } catch (error) {
+        console.error("Gemini 프록시 호출 중 오류 발생:", error);
+        showClue("앗, AI 조수와 연결이 불안정해! 네트워크를 확인하거나 잠시 후 다시 시도해줘.");
+    }
+}
+
+function escapeHTML(text) {
+    return String(text)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+}
 
         // --- 게임 데이터 ---
         const gameData = {
