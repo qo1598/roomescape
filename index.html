@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>경동 어린이! 안전한 디지털 세상을 지켜라!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Jua', sans-serif; }
+        .jua-font { font-family: 'Jua', sans-serif; }
+        .game-container {
+            width: 100%; max-width: 1000px; height: 100vh; max-height: 720px;
+            overflow: hidden; position: relative;
+        }
+        .modal-bg, .modal-bg-darker { animation: fadeIn 0.3s ease-out; }
+        .modal-content, .keypad-modal { animation: zoomIn 0.3s ease-out; }
+        .interactive-object {
+            cursor: pointer; transition: background-color 0.2s, border 0.2s;
+            background-color: rgba(255, 255, 0, 0); border: 3px solid transparent; border-radius: 10px;
+        }
+        .interactive-object:hover {
+            background-color: rgba(255, 255, 0, 0.2); border: 3px solid #fef08a;
+        }
+        #ai-assistant-owl:hover {
+            cursor: pointer; transform: scale(1.1); filter: drop-shadow(0 0 10px #67e8f9);
+        }
+        
+        /* 메모리 카드 게임용 스타일 */
+        .memory-card {
+            perspective: 1000px; cursor: pointer; width: 60px; height: 60px;
+        }
+        .memory-card-inner {
+            position: relative; width: 100%; height: 100%; text-align: center;
+            transition: transform 0.6s; transform-style: preserve-3d;
+        }
+        .memory-card.is-flipped .memory-card-inner { transform: rotateY(180deg); }
+        .memory-card-front, .memory-card-back {
+            position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            display: flex; align-items: center; justify-content: center; border-radius: 0.5rem;
+        }
+        .memory-card-front { background-color: #60a5fa; color: white; font-size: 1.5rem; }
+        .memory-card-back { background-color: #fde047; color: #1f2937; transform: rotateY(180deg); font-size: 1.2rem; font-weight: bold; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    </style>
+</head>
+<body class="bg-slate-900 flex items-center justify-center h-screen overflow-hidden jua-font">
+
+    <div id="game-container" class="game-container bg-cover bg-center rounded-2xl shadow-2xl flex flex-col items-center justify-center p-0 relative">
+
+        <div id="screen-start" class="w-full h-full flex flex-col items-center justify-end text-center text-white bg-cover bg-center rounded-xl" style="background-image: url('https://i.ibb.co/S1yQqcS/Gemini-Generated-Image-giixcbgiixcbgiix.png');">
+            <div class="bg-black bg-opacity-70 p-8 rounded-t-xl mb-12 max-w-3xl">
+                <p class="text-xl md:text-2xl mb-8">디지털 세상을 어지럽히는 문제를 풀고<br>평화를 되찾기 위해 경동 어린이 탐험대의 도움이 필요해!</p>
+                <button id="start-button" class="bg-yellow-400 text-gray-800 text-3xl font-bold py-4 px-10 rounded-full shadow-lg hover:bg-yellow-300 transform hover:scale-105 transition-all duration-300">
+                    탐험 임무 시작!
+                </button>
+            </div>
+        </div>
+        
+        <div id="player-info-screen" class="hidden absolute w-full h-full flex flex-col items-center justify-center bg-gray-800 bg-opacity-90 rounded-xl p-8 z-50">
+            <div class="bg-white rounded-2xl p-8 shadow-2xl text-center w-full max-w-md">
+                <div class="text-8xl mb-4">🦉</div>
+                <h2 class="text-3xl font-bold mb-4 text-gray-800">탐험을 시작하기 전에...</h2>
+                <p class="text-lg mb-6 text-gray-600">너의 이름과 학년, 반을 알려주면<br>내가 미션을 해결하는 데 도움을 줄게!<br>그리고 게임을 진행하다가 도움이 필요하면 나를 눌러줘!</p>
+                <div class="space-y-4">
+                    <input id="player-name" type="text" placeholder="이름을 입력하세요" class="w-full p-3 border-2 border-gray-300 rounded-lg text-xl text-center">
+                    <div class="flex gap-4">
+                        <input id="player-grade" type="number" placeholder="학년" class="w-1/2 p-3 border-2 border-gray-300 rounded-lg text-xl text-center">
+                        <input id="player-class" type="number" placeholder="반" class="w-1/2 p-3 border-2 border-gray-300 rounded-lg text-xl text-center">
+                    </div>
+                </div>
+                <button id="submit-player-info" class="mt-8 bg-green-500 text-white text-2xl font-bold w-full py-4 rounded-lg shadow-lg hover:bg-green-600 transition-all">게임 시작! 🚀</button>
+            </div>
+        </div>
+
+        <div id="screen-game" class="hidden w-full h-full flex flex-col">
+            <div class="flex justify-between items-center p-4 bg-gray-900 bg-opacity-70 rounded-t-xl z-10">
+                <div class="flex items-baseline space-x-2">
+                    <h2 id="stage-title" class="text-2xl text-yellow-300 font-bold"></h2>
+                    <span id="stage-indicator" class="text-lg text-gray-300 font-semibold"></span>
+                </div>
+                <div id="timer-display" class="text-2xl text-white font-bold">00:00</div>
+                <div id="hint-tracker" class="flex space-x-2 text-2xl"></div>
+            </div>
+
+            <div id="stage-content" class="flex-1 relative bg-cover bg-center"></div>
+
+            <div id="dialogue-box" class="w-full bg-gray-900 bg-opacity-80 p-4 flex items-center space-x-4 z-10 rounded-b-xl h-32">
+                <div id="ai-assistant-owl" class="text-6xl flex-shrink-0 transition-transform duration-200">🦉</div>
+                <div class="text-white text-lg flex-1">
+                    <p id="dialogue-text"></p>
+                </div>
+                <button id="next-stage-button" class="hidden bg-green-500 text-white text-xl font-bold py-3 px-6 rounded-full hover:bg-green-400 transition-transform transform hover:scale-105">다음 단계로</button>
+            </div>
+        </div>
+
+        <div id="screen-end" class="hidden w-full h-full flex flex-col items-center justify-center text-center text-white bg-cover bg-center p-8" style="background-color: #2e1065;">
+             <div class="w-full max-w-2xl bg-yellow-100 text-gray-800 p-8 rounded-2xl shadow-2xl border-4 border-yellow-400 transform flex flex-col items-center">
+                <h1 class="text-4xl font-bold mb-2 text-yellow-600">🎉 임무 완수! 🎉</h1>
+                <h2 class="text-2xl font-bold mb-4">디지털 시민 인증서</h2>
+                <div class="text-8xl my-4">🏆</div>
+                <p class="text-xl mb-2">위 어린이는 본 방탈출의 모든 과정을 통과하여<br>올바른 디지털 사용을 위한 모든 준비를 갖추었음을 인정합니다.</p>
+                <p id="final-player-name" class="text-3xl font-extrabold my-4 text-blue-600"></p>
+                <p id="final-time" class="text-lg font-semibold text-gray-600"></p>
+                <div class="mt-6 w-full">
+                    <label for="feedback-input" class="text-xl font-bold">소감을 남겨주세요!</label>
+                    <textarea id="feedback-input" rows="3" class="w-full mt-2 p-2 border-2 border-gray-300 rounded-lg text-lg" placeholder="방탈출 활동이 어땠는지, 새롭게 알게 된 점 등을 자유롭게 적어주세요."></textarea>
+                </div>
+                <button id="confirm-end-button" class="mt-8 bg-blue-500 text-white text-2xl font-bold py-3 px-8 rounded-full shadow-lg hover:bg-blue-400 transform hover:scale-105 transition-all duration-300">인증 및 기록 제출</button>
+            </div>
+        </div>
+
+        <iframe name="submitFrame" style="display:none;"></iframe>
+        <form id="submitForm" action="https://script.google.com/macros/s/AKfycbxoYizyOxmcNqjaGzmsb2KaiOjUOwpMeRdj9szwoxVSeo3PhATjwtejxB9bcGPOK-c-/exec" method="post" target="submitFrame" style="display:none;">
+            <input type="hidden" name="name" id="form-name">
+            <input type="hidden" name="grade" id="form-grade">
+            <input type="hidden" name="class" id="form-class">
+            <input type="hidden" name="time" id="form-time">
+            <input type="hidden" name="feedback" id="form-feedback">
+        </form>
+        
+        <div id="feedback-modal" class="hidden absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center modal-bg z-50">
+            <div class="modal-content bg-white rounded-2xl p-8 text-center shadow-lg">
+                <p id="feedback-icon" class="text-8xl mb-4"></p>
+                <p id="feedback-text" class="text-3xl font-bold text-gray-800"></p>
+            </div>
+        </div>
+        
+        <div id="clue-modal" class="hidden absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center modal-bg-darker z-40">
+            <div class="modal-content bg-yellow-100 rounded-2xl p-8 shadow-lg w-11/12 max-w-4xl text-gray-800 relative">
+                <button id="close-clue-modal" class="absolute top-2 right-4 text-3xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
+                <div id="clue-dynamic-content" class="text-center flex flex-col items-center justify-center min-h-[200px]">
+                </div>
+            </div>
+        </div>
+        
+        <div id="keypad-modal" class="hidden absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center modal-bg-darker z-30">
+            <div class="keypad-modal bg-gray-700 rounded-2xl p-6 shadow-lg w-11/12 max-w-xs">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-white">비밀번호 입력</span>
+                    <button id="close-keypad" class="text-gray-400 hover:text-white text-xl">&times;</button>
+                </div>
+                <div id="keypad-display" class="bg-gray-900 text-white text-4xl text-center rounded-lg h-16 mb-4 flex items-center justify-center tracking-widest font-mono"></div>
+                <div class="grid grid-cols-3 gap-2" id="keypad-buttons">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. 수정 포인트 2: API 프록시 호출 함수 (안전한 방식) ---
+        async function callGemini(prompt) {
+            // 여기에 선생님의 배포된 GAS 주소(웹 앱 URL)를 넣어주세요!
+            const gasWebappUrl = "https://script.google.com/macros/s/AKfycbxoYizyOxmcNqjaGzmsb2KaiOjUOwpMeRdj9szwoxVSeo3PhATjwtejxB9bcGPOK-c-/exec"; 
+            
+            showClue("<p class='text-2xl'>AI 조수인 부엉이가 힌트를 생각하고 있어요... 🤔</p>");
+            try {
+                const payload = { prompt: prompt }; 
+                const response = await fetch(gasWebappUrl, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload) 
+                });
+                
+                if (!response.ok) throw new Error(`API 요청 실패: ${response.status}`);
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
+                    const hint = result.candidates[0].content.parts[0].text;
+                    showClue(`<p class="text-2xl font-bold mb-4">🤖 부엉이의 조언!</p><p class="text-xl leading-relaxed">${hint.replace(/\n/g, '<br>')}</p>`);
+                } else {
+                     showClue("미안, 지금은 힌트를 줄 수 없어. 방을 좀 더 둘러봐!");
+                }
+            } catch (error) {
+                console.error("Gemini API 호출 중 오류 발생:", error);
+                showClue("앗, AI 조수와 연결이 불안정해! 네트워크를 확인하거나 잠시 후 다시 시도해줘.");
+            }
+        }
+
+        // --- 게임 데이터 ---
+        const gameData = {
+            stages: [
+                {
+                    title: "1단계: 개인정보의 방",
+                    background: "https://i.ibb.co/TBfcs8Dp/Gemini-Generated-Image-rwxbeorwxbeorwxb.png",
+                    dialogue: "{playerName} 탐험가! 이 방을 탈출하려면 숨겨진 4자리 비밀번호를 찾아야 해. 막히면 언제든 나(부엉이)를 눌러서 힌트를 얻어봐!",
+                    type: "escape_room", password: "3568", hintIcons: ['📚', '💻', '🖼️', '💡']
+                },
+                {
+                    title: "2단계: 공감의 교실",
+                    background: "https://i.ibb.co/nMLMyhjn/Gemini-Generated-Image-587wmp587wmp587w.png",
+                    dialogue: "{playerName}, 교실에 혼자 남았네... 이곳을 나가려면 친구의 마음을 여는 비밀번호를 찾아야 해. 교실 곳곳을 잘 살펴보자.",
+                    type: "escape_room", password: "1170", hintIcons: ['👨‍🏫', '🖥️', '✏️', '🔊']
+                },
+                {
+                    title: "3단계: 창작의 주방",
+                    background: "https://i.ibb.co/MyNz4ywq/Gemini-Generated-Image-6em9lf6em9lf6em9.png",
+                    dialogue: "{playerName}, 여기는 새로운 아이디어를 요리하는 '창작의 주방'이야. 이곳을 통과하려면 저작권 레시피를 잘 따라야 해!",
+                    type: "escape_room", password: "2417", hintIcons: ['🔥', '📖', '⏰', '🍽️']
+                },
+                {
+                    title: "4단계: 기억의 정원",
+                    background: "https://i.ibb.co/yncm4xwQ/Gemini-Generated-Image-wtne8uwtne8uwtne.png",
+                    dialogue: "여기는 '기억의 정원'이야. 인터넷에 남긴 기록들은 이곳의 식물처럼 자라나. 좋은 기억만 남길 수 있도록 정원을 조사해줘!",
+                    type: "escape_room", password: "1015", hintIcons: ['🧰', '🪴', '📖', '📦']
+                },
+                {
+                    title: "5단계: 비밀의 연구실",
+                    background: "https://i.ibb.co/0yJVWtbr/Gemini-Generated-Image-7k45no7k45no7k45.png",
+                    dialogue: "마지막 관문, '비밀의 연구실'에 온 걸 환영해! 이곳의 정보들을 분석해서 디지털 세상의 비밀을 풀고 탈출하는 거야!",
+                    type: "escape_room", password: "2024", hintIcons: ['💻', '🪧', '🗄️', '🧪']
+                }
+            ]
+        };
+
+        // --- 게임 상태 변수 ---
+        let gameState = {
+            playerName: '', playerGrade: '', playerClass: '',
+            currentStage: 0, elapsedTime: 0, timerInterval: null,
+            stageHintsFound: [] 
+        };
+        
+        let currentInputPassword = "";
+        let memoryGameCards = [];
+        let memoryGameFlipped = [];
+        let memoryGameMatches = 0;
+
+        // --- DOM 요소 ---
+        const screenStart = document.getElementById('screen-start');
+        const playerInfoScreen = document.getElementById('player-info-screen');
+        const screenGame = document.getElementById('screen-game');
+        const screenEnd = document.getElementById('screen-end');
+        
+        const startButton = document.getElementById('start-button');
+        const submitPlayerInfoBtn = document.getElementById('submit-player-info');
+        const confirmEndButton = document.getElementById('confirm-end-button');
+        const nextStageButton = document.getElementById('next-stage-button');
+        
+        const stageTitle = document.getElementById('stage-title');
+        const stageIndicator = document.getElementById('stage-indicator');
+        const timerDisplay = document.getElementById('timer-display');
+        const hintTracker = document.getElementById('hint-tracker');
+        const stageContent = document.getElementById('stage-content');
+        const dialogueText = document.getElementById('dialogue-text');
+        const aiAssistantOwl = document.getElementById('ai-assistant-owl');
+        
+        const feedbackModal = document.getElementById('feedback-modal');
+        const feedbackIcon = document.getElementById('feedback-icon');
+        const feedbackText = document.getElementById('feedback-text');
+        
+        const clueModal = document.getElementById('clue-modal');
+        const clueContent = document.getElementById('clue-dynamic-content'); 
+        const closeClueModalBtn = document.getElementById('close-clue-modal');
+        
+        const keypadModal = document.getElementById('keypad-modal');
+        const keypadDisplay = document.getElementById('keypad-display');
+        const closeKeypadBtn = document.getElementById('close-keypad');
+
+        // --- 이벤트 리스너 ---
+        startButton.onclick = () => { screenStart.classList.add('hidden'); playerInfoScreen.classList.remove('hidden'); };
+        
+        submitPlayerInfoBtn.onclick = () => {
+            const name = document.getElementById('player-name').value.trim();
+            const grade = document.getElementById('player-grade').value.trim();
+            const cls = document.getElementById('player-class').value.trim();
+            if(!name || !grade || !cls) return alert("이름, 학년, 반을 모두 입력해주세요!");
+            gameState.playerName = name; gameState.playerGrade = grade; gameState.playerClass = cls;
+            initGame();
+        };
+
+        closeClueModalBtn.onclick = () => clueModal.classList.add('hidden');
+        closeKeypadBtn.onclick = () => keypadModal.classList.add('hidden');
+        
+        nextStageButton.onclick = () => {
+            gameState.currentStage++;
+            if (gameState.currentStage >= gameData.stages.length) showEndScreen();
+            else loadStage(gameState.currentStage);
+        };
+
+        // 키패드 생성
+        const keypadButtonsDiv = document.getElementById('keypad-buttons');
+        [1,2,3,4,5,6,7,8,9,'C',0,'E'].forEach(key => {
+            const btn = document.createElement('button');
+            btn.className = "bg-gray-600 hover:bg-gray-500 text-white text-2xl font-bold py-3 rounded active:bg-gray-400";
+            btn.textContent = key === 'C' ? '지우기' : key === 'E' ? '확인' : key;
+            if(key === 'C') btn.onclick = () => { currentInputPassword = ""; updateKeypadDisplay(); };
+            else if(key === 'E') btn.onclick = checkPassword;
+            else btn.onclick = () => { if(currentInputPassword.length < 4) currentInputPassword += key; updateKeypadDisplay(); };
+            keypadButtonsDiv.appendChild(btn);
+        });
+
+        // --- 공통 함수 ---
+        function updateTimerDisplay() {
+            const m = Math.floor(gameState.elapsedTime / 60).toString().padStart(2, '0');
+            const s = (gameState.elapsedTime % 60).toString().padStart(2, '0');
+            timerDisplay.textContent = `${m}:${s}`;
+        }
+
+        function updateHintTracker() {
+            hintTracker.innerHTML = '';
+            gameData.stages[gameState.currentStage].hintIcons.forEach((icon, idx) => {
+                const span = document.createElement('span');
+                span.textContent = icon;
+                span.className = gameState.stageHintsFound[idx] ? "opacity-100" : "opacity-30 grayscale";
+                hintTracker.appendChild(span);
+            });
+        }
+
+        function showFeedback(isSuccess, text) {
+            feedbackIcon.textContent = isSuccess ? '✅' : '❌';
+            feedbackText.textContent = text;
+            feedbackText.className = isSuccess ? 'text-3xl font-bold text-green-600' : 'text-3xl font-bold text-red-600';
+            feedbackModal.classList.remove('hidden');
+            setTimeout(() => feedbackModal.classList.add('hidden'), 1500);
+        }
+
+        function showClue(htmlContent, isString = true) {
+            clueContent.innerHTML = isString ? `<p class="text-xl">${htmlContent}</p>` : htmlContent;
+            clueModal.classList.remove('hidden');
+        }
+
+        function showKeypad(correctPassword) {
+            currentInputPassword = "";
+            updateKeypadDisplay();
+            keypadModal.classList.remove('hidden');
+            keypadModal.dataset.correct = correctPassword;
+        }
+        
+        function updateKeypadDisplay() {
+            keypadDisplay.textContent = currentInputPassword.padEnd(4, '·');
+        }
+
+        function checkPassword() {
+            const correct = keypadModal.dataset.correct;
+            if (currentInputPassword === correct) {
+                keypadModal.classList.add('hidden');
+                showFeedback(true, "철컥! 문이 열렸습니다!");
+                dialogueText.textContent = "와! 비밀번호를 맞췄어! 다음 방으로 이동하자!";
+                nextStageButton.classList.remove('hidden');
+            } else {
+                showFeedback(false, "비밀번호가 틀렸습니다.");
+                currentInputPassword = "";
+                updateKeypadDisplay();
+            }
+        }
+
+        // --- 초기화 및 단계 로드 ---
+        function initGame() {
+            playerInfoScreen.classList.add('hidden');
+            gameState.currentStage = 0; gameState.elapsedTime = 0;
+            if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+            screenStart.classList.add('hidden'); screenEnd.classList.add('hidden');
+            screenGame.classList.remove('hidden');
+            gameState.timerInterval = setInterval(() => { gameState.elapsedTime++; updateTimerDisplay(); }, 1000);
+            loadStage(0);
+        }
+
+        function loadStage(stageIndex) {
+            const stage = gameData.stages[stageIndex];
+            gameState.stageHintsFound = Array(stage.hintIcons.length).fill(false);
+            stageContent.style.backgroundImage = `url('${stage.background}')`;
+            stageTitle.textContent = stage.title;
+            stageIndicator.textContent = `${stageIndex + 1} / ${gameData.stages.length}`;
+            dialogueText.textContent = stage.dialogue.replace('{playerName}', gameState.playerName);
+            nextStageButton.classList.add('hidden');
+            stageContent.innerHTML = '';
+            updateHintTracker();
+
+            if (stageIndex === 0) renderStage1(stage);
+            if (stageIndex === 1) renderStage2(stage);
+            if (stageIndex === 2) renderStage3(stage);
+            if (stageIndex === 3) renderStage4(stage);
+            if (stageIndex === 4) renderStage5(stage);
+            
+            // AI 부엉이 힌트 연결
+            aiAssistantOwl.classList.add('cursor-pointer', 'animate-pulse');
+            aiAssistantOwl.onclick = () => {
+                const found = gameState.stageHintsFound.filter(Boolean).length;
+                const prompt = `초등학생 ${gameState.playerName}을 위한 방탈출 ${stageIndex+1}단계야. 비밀번호 4자리 중 힌트를 ${found}개 찾았어. 아이가 쉽게 이해하고 친절한 말투로 다음에 뭘 해볼지 힌트를 짧게 하나만 줘. 정답은 절대 직접 말하지 마.`;
+                callGemini(prompt);
+            };
+        }
+
+        // --- 각 단계별 렌더링 ---
+        function renderStage1(stage) {
+            stageContent.innerHTML = `<div id="laptop" class="absolute interactive-object" style="top: 58%; left: 5%; width: 15%; height: 30%;"></div><div id="books" class="absolute interactive-object" style="top: 65%; left: 33%; width: 15%; height: 20%;"></div><div id="frame" class="absolute interactive-object" style="top: 15%; left: 40%; width: 14%; height: 33%;"></div><div id="switch" class="absolute interactive-object" style="top: 40%; left: 62%; width: 5%; height: 10%;"></div><div id="door" class="absolute interactive-object" style="top: 10%; left: 70%; width: 23%; height: 88%;"></div>`;
+            
+            document.getElementById('books').onclick = () => { 
+                if(gameState.stageHintsFound[0]) return showClue("정보 보석은 모두 분류했어! 첫 번째 비밀번호는 '3'이었지."); 
+                showClue("책상 위에 메모가 있다!<br><br>'가장 소중한 개인정보 3가지를 기억해.'<br><br><strong>첫 번째 비밀번호는 '3' 이야!</strong>");
+                gameState.stageHintsFound[0] = true; updateHintTracker();
+            };
+            document.getElementById('laptop').onclick = () => { 
+                if(gameState.stageHintsFound[1]) return showClue("컴퓨터 퀴즈는 이미 풀었어. 두 번째 비밀번호는 '5' 였지."); 
+                showClue(`<h3 class="text-2xl font-bold mb-4">보안 퀴즈!</h3><p class="text-xl mb-4">온라인에서 만난 사람에게 알려줘도 안전한 정보는?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="false">내 집 주소</button><button class="choice-btn" data-correct="true">좋아하는 게임</button><button class="choice-btn" data-correct="false">학교 이름</button></div>`, false); 
+                setupQuizChoices(1, "정답! 두 번째 비밀번호는 '5'야. 잘 기억해둬!"); 
+            };
+            document.getElementById('frame').onclick = () => { 
+                showClue("액자 뒤에 무언가 적혀있다... <br><br> '비밀번호는 여/섯/글/자 이상으로 해!' <br><br> <strong>세 번째 비밀번호는 '6' 인 것 같다!</strong>"); 
+                gameState.stageHintsFound[2] = true; updateHintTracker(); 
+            };
+            document.getElementById('switch').onclick = () => { 
+                showClue("전등 스위치 옆에 낙서가 있다! <br><br> 희미하게 숫자 '8'이 보인다. <br><br><strong>네 번째 비밀번호는 '8'이 틀림없어!</strong>"); 
+                gameState.stageHintsFound[3] = true; updateHintTracker(); 
+            };
+            document.getElementById('door').onclick = () => showKeypad(stage.password);
+        }
+
+        function renderStage2(stage) {
+            stageContent.innerHTML = `<div id="chalkboard" class="absolute interactive-object" style="top: 20%; left: 28%; width: 44%; height: 34%;"></div><div id="computer" class="absolute interactive-object" style="top: 35%; left: 2%; width: 20%; height: 23%;"></div><div id="pencil-case" class="absolute interactive-object" style="top: 73%; left: 63%; width: 12%; height: 18%;"></div><div id="speaker" class="absolute interactive-object" style="top: 12%; left: 16%; width: 6%; height: 11%;"></div><div id="door" class="absolute interactive-object" style="top: 19%; left: 78%; width: 18%; height: 60%;"></div>`;
+            
+            document.getElementById('chalkboard').onclick = () => { 
+                if(gameState.stageHintsFound[0]) return showClue("첫 번째 비밀번호는 '1'이었지."); 
+                showClue(`<h3 class="text-2xl font-bold mb-4">칠판 퀴즈!</h3><p class="text-xl mb-4">다음 중 사이버폭력에 해당하지 않는 것은?</p><div class="grid grid-cols-1 gap-2"><button class="choice-btn" data-correct="true">친구에게 칭찬 댓글 달기</button><button class="choice-btn" data-correct="false">단체방에서 욕하기</button></div>`, false); 
+                setupQuizChoices(0, "맞아! 첫 번째 비밀번호는 '1'이야."); 
+            };
+            document.getElementById('computer').onclick = () => { 
+                showClue("상처받은 친구를 위해 '1'번 더 생각하고 말하자.<br><br><strong>두 번째 비밀번호는 '1' 이야!</strong>"); 
+                gameState.stageHintsFound[1] = true; updateHintTracker(); 
+            };
+            document.getElementById('pencil-case').onclick = () => { 
+                if(gameState.stageHintsFound[2]) return showClue("카드 게임은 끝났어! 세 번째 비밀번호는 '7' 이었지."); 
+                showMemoryGameModal(); 
+            };
+            document.getElementById('speaker').onclick = () => { 
+                showClue("스피커에서 소리가 난다...<br><br>'사이버폭력 신고는 117!'<br><br><strong>마지막 비밀번호는 '0' 인가봐!</strong>"); 
+                gameState.stageHintsFound[3] = true; updateHintTracker(); 
+            };
+            document.getElementById('door').onclick = () => showKeypad(stage.password);
+        }
+
+        function renderStage3(stage) {
+            stageContent.innerHTML = `<div id="oven" class="absolute interactive-object" style="top: 40%; left: 4%; width: 18%; height: 12%;"></div><div id="book" class="absolute interactive-object" style="top: 72%; left: 33%; width: 40%; height: 23%;"></div><div id="clock" class="absolute interactive-object" style="top: 12%; left: 26%; width: 10%; height: 18%;"></div><div id="jars" class="absolute interactive-object" style="top: 53%; left: 63%; width: 13%; height: 27%;"></div><div id="door" class="absolute interactive-object" style="top: 22%; left: 40%; width: 18%; height: 48%;"></div>`;
+            
+            document.getElementById('oven').onclick = () => { showClue("오븐에 '2'라는 숫자가 그을려 있다."); gameState.stageHintsFound[0]=true; updateHintTracker(); };
+            document.getElementById('book').onclick = () => { showClue("레시피 책 4페이지에 밑줄이 쳐져있다. '저작권을 지키자!'"); gameState.stageHintsFound[1]=true; updateHintTracker(); };
+            document.getElementById('clock').onclick = () => { showClue("시계가 '1'시를 가리킨다."); gameState.stageHintsFound[2]=true; updateHintTracker(); };
+            document.getElementById('jars').onclick = () => { showClue("단지 7개가 모여있다."); gameState.stageHintsFound[3]=true; updateHintTracker(); };
+            document.getElementById('door').onclick = () => showKeypad(stage.password);
+        }
+
+        function renderStage4(stage) {
+            stageContent.innerHTML = `<div id="toolbox" class="absolute interactive-object" style="top: 45%; left: 10%; width: 22%; height: 20%;"></div><div id="plant" class="absolute interactive-object" style="top: 10%; left: 15%; width: 10%; height: 20%;"></div><div id="book-stage4" class="absolute interactive-object" style="top: 75%; left: 60%; width: 30%; height: 17%;"></div><div id="box-under" class="absolute interactive-object" style="top: 75%; left: 16%; width: 15%; height: 15%;"></div><div id="door" class="absolute interactive-object" style="top: 28%; left: 60%; width: 15%; height: 40%;"></div>`;
+            
+            document.getElementById('toolbox').onclick = () => { showClue("공구함에 '1'번 스티커가 붙어있다."); gameState.stageHintsFound[0]=true; updateHintTracker(); };
+            document.getElementById('plant').onclick = () => { showClue("화분 바닥에 '0'이 적혀있다."); gameState.stageHintsFound[1]=true; updateHintTracker(); };
+            document.getElementById('book-stage4').onclick = () => { showClue("책갈피에 '1'이 그려져 있다."); gameState.stageHintsFound[2]=true; updateHintTracker(); };
+            document.getElementById('box-under').onclick = () => { showClue("상자 안에서 '5'번 열쇠를 찾았다."); gameState.stageHintsFound[3]=true; updateHintTracker(); };
+            document.getElementById('door').onclick = () => showKeypad(stage.password);
+        }
+
+        function renderStage5(stage) {
+            stageContent.innerHTML = `<div id="monitor" class="absolute interactive-object" style="top: 28%; left: 2%; width: 20%; height: 25%;"></div><div id="whiteboard" class="absolute interactive-object" style="top: 20%; left: 23%; width: 30%; height: 30%;"></div><div id="cabinet" class="absolute interactive-object" style="top: 70%; left: 60%; width: 12%; height: 25%;"></div><div id="flasks" class="absolute interactive-object" style="top: 55%; left: 40%; width: 20%; height: 20%;"></div><div id="door" class="absolute interactive-object" style="top: 15%; left: 73%; width: 20%; height: 60%;"></div>`;
+            
+            document.getElementById('monitor').onclick = () => { showClue("모니터 화면에 오류 코드 '2'가 뜬다."); gameState.stageHintsFound[0]=true; updateHintTracker(); };
+            document.getElementById('whiteboard').onclick = () => { showClue("보드마카로 동그라미 '0'이 그려져 있다."); gameState.stageHintsFound[1]=true; updateHintTracker(); };
+            document.getElementById('cabinet').onclick = () => { showClue("캐비닛 손잡이에 '2'가 새겨져 있다."); gameState.stageHintsFound[2]=true; updateHintTracker(); };
+            document.getElementById('flasks').onclick = () => { showClue("4개의 플라스크가 빛나고 있다."); gameState.stageHintsFound[3]=true; updateHintTracker(); };
+            document.getElementById('door').onclick = () => showKeypad(stage.password);
+        }
+
+        // --- 퀴즈 버튼 설정 함수 ---
+        function setupQuizChoices(hintIndex, successMessage) {
+            clueContent.querySelectorAll('.choice-btn').forEach(btn => {
+                btn.className = "bg-blue-500 hover:bg-blue-400 text-white p-3 rounded-lg text-lg mb-2 cursor-pointer transition-colors";
+                btn.onclick = () => {
+                    if (btn.dataset.correct === 'true') {
+                        showClue(successMessage);
+                        gameState.stageHintsFound[hintIndex] = true; updateHintTracker();
+                    } else {
+                        clueModal.classList.add('hidden'); 
+                        showFeedback(false, "그건 정답이 아니야! 다시 생각해봐!");
+                    }
+                };
+            });
+        }
+
+        // --- 메모리 게임 미니게임 로직 ---
+        function showMemoryGameModal() {
+            const emojis = ['😀', '😭', '😡', '😱'];
+            const words = ['기쁨', '슬픔', '화남', '놀람'];
+            const pairs = [];
+            for(let i=0; i<4; i++) {
+                pairs.push({ id: i, content: emojis[i], type: 'emoji' });
+                pairs.push({ id: i, content: words[i], type: 'word' });
+            }
+            pairs.sort(() => 0.5 - Math.random());
+            
+            let cardsHtml = '<div class="grid grid-cols-4 gap-4 p-4 mx-auto w-fit">';
+            pairs.forEach((pair, index) => {
+                cardsHtml += `
+                <div class="memory-card" data-index="${index}" data-id="${pair.id}">
+                    <div class="memory-card-inner">
+                        <div class="memory-card-front">?</div>
+                        <div class="memory-card-back">${pair.content}</div>
+                    </div>
+                </div>`;
+            });
+            cardsHtml += '</div><p class="mt-4 text-lg">감정 이모티콘과 단어 짝을 맞춰봐!</p>';
+            
+            showClue(cardsHtml, false);
+            
+            memoryGameCards = pairs;
+            memoryGameFlipped = [];
+            memoryGameMatches = 0;
+            
+            document.querySelectorAll('.memory-card').forEach(card => {
+                card.onclick = function() {
+                    if(this.classList.contains('is-flipped') || memoryGameFlipped.length >= 2) return;
+                    
+                    this.classList.add('is-flipped');
+                    memoryGameFlipped.push(this);
+                    
+                    if(memoryGameFlipped.length === 2) {
+                        const id1 = memoryGameFlipped[0].dataset.id;
+                        const id2 = memoryGameFlipped[1].dataset.id;
+                        
+                        if(id1 === id2) {
+                            memoryGameMatches++;
+                            memoryGameFlipped = [];
+                            if(memoryGameMatches === 4) {
+                                setTimeout(() => {
+                                    showClue("감정 카드를 모두 맞췄어! 세 번째 비밀번호는 '7' 이야!");
+                                    gameState.stageHintsFound[2] = true; updateHintTracker();
+                                }, 500);
+                            }
+                        } else {
+                            setTimeout(() => {
+                                memoryGameFlipped[0].classList.remove('is-flipped');
+                                memoryGameFlipped[1].classList.remove('is-flipped');
+                                memoryGameFlipped = [];
+                            }, 1000);
+                        }
+                    }
+                };
+            });
+        }
+
+        // --- 게임 종료 및 구글 시트 저장 로직 ---
+        function showEndScreen() {
+            clearInterval(gameState.timerInterval);
+            screenGame.classList.add('hidden');
+            screenEnd.classList.remove('hidden');
+            
+            const m = Math.floor(gameState.elapsedTime / 60);
+            const s = gameState.elapsedTime % 60;
+            
+            document.getElementById('final-player-name').textContent = `${gameState.playerGrade}학년 ${gameState.playerClass}반 ${gameState.playerName}`;
+            document.getElementById('final-time').textContent = `탈출 소요 시간: ${m}분 ${s}초`;
+        }
+
+        confirmEndButton.onclick = () => {
+            const feedback = document.getElementById('feedback-input').value;
+            
+            // 숨겨진 폼에 데이터 세팅
+            document.getElementById('form-name').value = gameState.playerName;
+            document.getElementById('form-grade').value = gameState.playerGrade;
+            document.getElementById('form-class').value = gameState.playerClass;
+            document.getElementById('form-time').value = gameState.elapsedTime;
+            document.getElementById('form-feedback').value = feedback;
+            
+            // 폼 제출 (구글 시트로 전송)
+            document.getElementById('submitForm').submit();
+            
+            alert("인증서가 발급되었고, 탐험 기록이 성공적으로 저장되었습니다!\n수고하셨습니다!");
+            confirmEndButton.textContent = "기록 제출 완료";
+            confirmEndButton.disabled = true;
+            confirmEndButton.classList.replace('bg-blue-500', 'bg-gray-400');
+        };
+    });
+    </script>
+</body>
+</html>
